@@ -1,0 +1,23 @@
+{
+  "name": "txm-cli",
+  "version": "0.0.1",
+  "description": "The ultimate CLI from Transaction Middleware (TXM)",
+  "main": "cli.js",
+  "scripts": {
+    "start": "node cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@tom.wincor-nixdorf.com:7999/bcsdm/txm-cli.git"
+  },
+  "keywords": [
+    "TXM",
+    "CLI"
+  ],
+  "author": "Thorsten Liese",
+  "license": "ISC",
+  "bin": {
+    "txm": "./cli.js"
+  }
+}
