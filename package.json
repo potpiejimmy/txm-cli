@@ -1,6 +1,6 @@
 {
   "name": "txm-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The ultimate CLI from Transaction Middleware (TXM)",
   "main": "cli.js",
   "scripts": {
@@ -19,5 +19,11 @@
   "license": "ISC",
   "bin": {
     "txm": "./cli.js"
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.11",
+    "del": "^3.0.0",
+    "jszip": "^3.1.5",
+    "settings-store": "^1.4.1"
   }
 }
