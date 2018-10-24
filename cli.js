@@ -2,7 +2,7 @@
 const settings = require("settings-store")
 
 function usage() {
-    console.log("TXM Command Line Interface v" + process.env.npm_package_version);
+    console.log("TXM Command Line Interface v" + require('./package.json').version);
     console.log();
     console.log("Usage:  txm <cmd>");
     console.log();
