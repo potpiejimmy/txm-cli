@@ -20,7 +20,7 @@ function usage() {
 // load settings:
 settings.init({
     appName:       "txm-cli", //required,
-    publisherName: "Diebold Nixdorf Inc.", //optional
+    publisherName: "Diebold Nixdorf", //optional
     reverseDNS:    "com.dieboldnixdorf.txm" //required for macOS
 });
 
