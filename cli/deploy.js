@@ -2,7 +2,6 @@ const fs = require('fs');
 const del = require('del');
 var JSZip = require("jszip");
 var AdmZip = require('adm-zip');
-var exec = require('child_process').exec;
 
 async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
@@ -75,14 +74,6 @@ async function extractEarFromDist(zipfile, earfile, outfile) {
     });
 
     fs.writeFileSync(outfile, data);
-}
-
-async function execute(cmd, cwd) {
-    exec('pwd', {
-      cwd: '/home/user/directory'
-    }, function(error, stdout, stderr) {
-      // work with result
-    });
 }
 
 module.exports.invoke = invoke;
