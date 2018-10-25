@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","server","sandbox","deploy","build","rebuild","all"];
+const KNOWN_COMMANDS = ["version","server","sandbox","deploy","build","rebuild","cpgen","all"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
@@ -15,6 +15,7 @@ function usage() {
     console.log("                  to the current default server(s).");
     console.log("       build      do a gradlew build without recreating runtime folder.");
     console.log("       rebuild    do a clean build with new runtime folder.");
+    console.log("       cpgen      performs CPGEN import (beta).");
     console.log("       all        do everything, clean rebuild, createDB and deploy.");
     console.log();
     let defaults = global.settings.value("defaults");
