@@ -42,10 +42,10 @@ function list() {
                      "[" + servers[key].name + "]\t" +
                      servers[key].type + "\t" +
                      servers[key].path + " " +
-                     "(" + servers[key].serverType + ":" + servers[key].port + ")");
+                     "(" + servers[key].serverType + ", port " + servers[key].port + ")");
     })
     console.log();
-    console.log("*=current default server(s) / deploy target(s)");
+    console.log("* = current default server(s) / deploy target(s)");
 }
 
 function set(name, path, type='txm') {

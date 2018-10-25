@@ -37,7 +37,7 @@ function list() {
         console.log((sandboxes[key].name==d ? "* " : "  ") + "[" + sandboxes[key].name + "]\t" + sandboxes[key].path);
     })
     console.log();
-    console.log("*=current default sandbox");
+    console.log("* = current default sandbox");
 }
 
 function set(name, path) {
