@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","server","sandbox","deploy","build","rebuild","cpgen","all","sim"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","cpgen","all","sim"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
@@ -9,6 +9,7 @@ function usage() {
     console.log("with <cmd> being one of");
     console.log();
     console.log("       version    display version info.");
+    console.log("       update     updates CLI to most recent version.");
     console.log("       server     manage your servers.");
     console.log("       sandbox    manage your sandboxes.");
     console.log("       deploy     deploy and explode EARs from the current default sandbox");
