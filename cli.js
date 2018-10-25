@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","server","sandbox","deploy","build","rebuild","cpgen","all"];
+const KNOWN_COMMANDS = ["version","server","sandbox","deploy","build","rebuild","cpgen","all","sim"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
@@ -17,6 +17,7 @@ function usage() {
     console.log("       rebuild    do a clean build with new runtime folder.");
     console.log("       cpgen      performs CPGEN import (beta).");
     console.log("       all        do everything, clean rebuild, createDB and deploy.");
+    console.log("       sim        configures and runs the PBM simulator GUI.");
     console.log();
     let defaults = global.settings.value("defaults");
     if (defaults) console.log("Current defaults:\n" + JSON.stringify(defaults, null, 2));

@@ -33,3 +33,14 @@ module.exports.spawn = async function(cmd, args, cwd) {
         });
     });
 }
+
+/**
+ * Spawns a detached child process without stdio
+ */
+module.exports.spawnDetached = async function(cmd, args, cwd) {
+    spawn(cmd, args, {
+        cwd: cwd,
+        silent: true,
+        detached: true,
+        stdio: [null, null, null]});
+}
