@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 function usage() {
     console.log("Usage:  txm server <cmd>");
     console.log();
@@ -38,8 +40,9 @@ function list() {
     Object.keys(servers).forEach(key => {
         console.log((servers[key].name.startsWith(d) ? "* " : "  ") +
                      "[" + servers[key].name + "]\t" +
-                     (servers[key].type+" ").substr(0,4) + "\t" +
-                     servers[key].path);
+                     servers[key].type + "\t" +
+                     servers[key].path + " " +
+                     "(" + servers[key].serverType + ":" + servers[key].port + ")");
     })
     console.log();
     console.log("*=current default server(s) / deploy target(s)");
@@ -48,10 +51,37 @@ function list() {
 function set(name, path, type='txm') {
     if (!name || !path) usage();
     if (!['txm','rops','kko'].includes(type)) usage();
-    global.settings.setValue("servers."+name, {name:name, path:path, type:type});
+    let server = determineServerType(path);
+    if (!server) {
+        console.log("Unknown server type at " + path);
+        console.log("Please specify a valid JBoss or WLP server folder (e.g. the standalone dir of a JBoss)");
+        return;
+    }
+    server.name = name;
+    server.path = path;
+    server.type = type;
+    global.settings.setValue("servers."+name, server);
     let d = global.settings.value("defaults.server");
     if (!d || !name.startsWith(d)) def(name); // make default if not already targeted
     else list();
+}
+
+function determineServerType(path) {
+    if (fs.existsSync(path+"/deployments")) {
+        let serverCfg = fs.readFileSync(path+"/configuration/standalone-full.xml");
+        let port = /{jboss.http.port:(\d*)/g.exec(serverCfg);
+        return {
+            serverType: "jboss",
+            port: parseInt(port[1])
+        };
+    } else if (fs.existsSync(path+"/dropins")) {
+        let serverCfg = fs.readFileSync(path+"/server.xml");
+        let port = /httpPort="(\d*)"/g.exec(serverCfg);
+        return {
+            serverType: "wlp",
+            port: parseInt(port[1])
+        };
+    }
 }
 
 function del(name) {
