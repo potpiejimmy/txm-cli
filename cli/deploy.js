@@ -62,16 +62,15 @@ function deltree(path) {
 
 async function extractEarFromDist(zipfile, earfile, outfile) {
 
-    let zip = await new Promise((resolve,reject) => {
+    let zipdata = await new Promise((resolve,reject) => {
         fs.readFile(zipfile, (err, data) => {
             if (err) reject(err);
-            JSZip.loadAsync(data).then(z => resolve(z));
+            else resolve(data);
         });
     });
 
-    let data = await new Promise((resolve,reject) => {
-        zip.file(earfile).async("uint8array").then(d => resolve(d));
-    });
+    let zip = await JSZip.loadAsync(zipdata);
+    let data = await zip.file(earfile).async("uint8array");
 
     fs.writeFileSync(outfile, data);
 }

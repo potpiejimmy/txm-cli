@@ -2,6 +2,10 @@ const util = require('../utils/util');
 
 async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
+    if (!sbox) {
+        console.log("Please configure default sandbox first.");
+        return;
+    }
     let execpath = sbox.path + "\\Projects\\SI\\Tools\\PBMSimulatorGUI\\SimulationFiles";
     let executable = execpath + "\\SIPbmSimulatorConfigurator.exe";
     let chameleonpath = sbox.path + "\\runtime\\chameleon";
