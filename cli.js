@@ -1,17 +1,21 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","server","sandbox","deploy"];
+const KNOWN_COMMANDS = ["version","server","sandbox","deploy","build","rebuild","all"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();
-    console.log("       version:    display version info");
-    console.log("       server:     manage your servers");
-    console.log("       sandbox:    manage your sandboxes");
-    console.log("       deploy:     deploy and explode from current sandbox to current server");
+    console.log("       version    display version info.");
+    console.log("       server     manage your servers.");
+    console.log("       sandbox    manage your sandboxes.");
+    console.log("       deploy     deploy and explode EARs from the current default sandbox");
+    console.log("                  to the current default server(s).");
+    console.log("       build      do a gradlew build without recreating runtime folder.");
+    console.log("       rebuild    do a clean build with new runtime folder.");
+    console.log("       all        do everything, clean rebuild, createDB and deploy.");
     console.log();
     let defaults = global.settings.value("defaults");
     if (defaults) console.log("Current defaults:\n" + JSON.stringify(defaults, null, 2));

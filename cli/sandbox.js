@@ -3,10 +3,10 @@ function usage() {
     console.log();
     console.log("with <cmd> being one of");
     console.log();
-    console.log("       list:                list configured sandboxes");
-    console.log("       set <name> <path>:   set or update a sandbox");
-    console.log("       del <name>:          delete a sandbox");
-    console.log("       default <name>:      sets the current default sandbox");
+    console.log("       list                list configured sandboxes.");
+    console.log("       set <name> <path>   set or update a sandbox.");
+    console.log("       del <name>          delete a sandbox.");
+    console.log("       default <name>      sets the current default sandbox.");
     
     process.exit();
 }
@@ -34,8 +34,10 @@ function list() {
     } 
     let d = global.settings.value("defaults.sandbox");
     Object.keys(sandboxes).forEach(key => {
-        console.log((sandboxes[key].name==d ? "* " : "  ") + "[" + sandboxes[key].name + "]:\t" + sandboxes[key].path);
+        console.log((sandboxes[key].name==d ? "* " : "  ") + "[" + sandboxes[key].name + "]\t" + sandboxes[key].path);
     })
+    console.log();
+    console.log("*=current default sandbox");
 }
 
 function set(name, path) {
