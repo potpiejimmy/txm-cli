@@ -16,10 +16,10 @@ function invoke(args) {
     if (!args.length) usage();
 
     let cmd = args[0];
-    if (cmd === "list") list();
-    else if (cmd === "set") set(args[1], args[2]);
-    else if (cmd === "del") del(args[1]);
-    else if (cmd === "default") def(args[1]);
+    if ("list".startsWith(cmd)) list();
+    else if ("set".startsWith(cmd)) set(args[1], args[2]);
+    else if ("default".startsWith(cmd)) def(args[1]);
+    else if ("del".startsWith(cmd)) del(args[1]);
     else {
         console.log("Unknown command: " + cmd);
         usage();

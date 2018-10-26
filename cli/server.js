@@ -11,7 +11,7 @@ function usage() {
     console.log("       default <name/prefix>        sets the current default server(s). can be a");
     console.log("                                    prefix to multiple server names to target");
     console.log("                                    multiple servers.");
-    
+
     process.exit();
 }
 
@@ -20,10 +20,10 @@ function invoke(args) {
     if (!args.length) usage();
 
     let cmd = args[0];
-    if (cmd === "list") list();
-    else if (cmd === "set") set(args[1], args[2], args[3]);
-    else if (cmd === "del") del(args[1]);
-    else if (cmd === "default") def(args[1]);
+    if ("list".startsWith(cmd)) list();
+    else if ("set".startsWith(cmd)) set(args[1], args[2], args[3]);
+    else if ("default".startsWith(cmd)) def(args[1]);
+    else if ("del".startsWith(cmd)) del(args[1]);
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -51,6 +51,10 @@ function list() {
 function set(name, path, type='txm') {
     if (!name || !path) usage();
     if (!['txm','rops','kko'].includes(type)) usage();
+    if (!name.match(/^[A-Za-z0-9-_]*$/)) {
+        console.log("Sorry, the name '"+name+"' contains invalid characters.");
+        return;
+    }
     let server = determineServerType(path);
     if (!server) {
         console.log("Unknown server type at " + path);
@@ -69,14 +73,14 @@ function set(name, path, type='txm') {
 function determineServerType(path) {
     if (fs.existsSync(path+"/deployments")) {
         let serverCfg = fs.readFileSync(path+"/configuration/standalone-full.xml");
-        let port = /{jboss.http.port:(\d*)/g.exec(serverCfg);
+        let port = /{jboss.http.port:(\d*)/.exec(serverCfg);
         return {
             serverType: "jboss",
             port: parseInt(port[1])
         };
     } else if (fs.existsSync(path+"/dropins")) {
         let serverCfg = fs.readFileSync(path+"/server.xml");
-        let port = /httpPort="(\d*)"/g.exec(serverCfg);
+        let port = /httpPort="(\d*)"/.exec(serverCfg);
         return {
             serverType: "wlp",
             port: parseInt(port[1])
