@@ -11,8 +11,7 @@ async function invoke(args) {
         return;
     }
     let servers = global.settings.value("servers");
-    for (let key of Object.keys(servers)) {
-        let server = servers[key];
+    for (let server of Object.values(servers)) {
         if (server.name.startsWith(defsrv)) {
             console.log("Deploying " + server.type + " to " + server.path);
             await deployServer(sbox, server);

@@ -19,8 +19,7 @@ async function invoke(args) {
 
 function determineServerPort(servers) {
     let d = global.settings.value("defaults.server");
-    for (let key of Object.keys(servers)) {
-        let server = servers[key];
+    for (let server of Object.values(servers)) {
         if (server.name.startsWith(d) && server.type == 'txm') return server.port;
     }
     return 8080;
