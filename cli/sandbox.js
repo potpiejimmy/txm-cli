@@ -33,9 +33,9 @@ function list() {
         return;
     } 
     let d = global.settings.value("defaults.sandbox");
-    Object.keys(sandboxes).forEach(key => {
-        console.log((sandboxes[key].name==d ? "* " : "  ") + "[" + sandboxes[key].name + "]\t" + sandboxes[key].path);
-    })
+    for (let sandbox of Object.values(sandboxes)) {
+        console.log((sandbox.name==d ? "* " : "  ") + "[" + sandbox.name + "]\t" + sandbox.path);
+    }
     console.log();
     console.log("* = current default sandbox");
 }

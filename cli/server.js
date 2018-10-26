@@ -41,8 +41,7 @@ function list() {
         return;
     }
     let d = global.settings.value("defaults.server");
-    for (let key of Object.keys(servers)) {
-        let server = servers[key];
+    for (let server of Object.values(servers)) {
         console.log((server.name.startsWith(d) ? "* " : "  ") +
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
@@ -110,8 +109,7 @@ function def(name) {
 async function stop(name) {
     let servers = global.settings.value("servers");
     if (!servers) return;
-    for (let key of Object.keys(servers)) {
-        let server = servers[key];
+    for (let server of Object.values(servers)) {
         if (!name || server.name.startsWith(name)) {
             let nativeServerName = path.basename(server.path);
             console.log("Stopping server '" + nativeServerName + "' at " + server.path);
