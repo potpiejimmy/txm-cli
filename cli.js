@@ -39,6 +39,11 @@ if (process.argv.length<3) usage();
 // now start the actual sub command program:
 let cmd = process.argv[2];
 
+// allow abbreviation of all commands:
+for (let c of KNOWN_COMMANDS) {
+    if (c.startsWith(cmd)) cmd = c;
+}
+
 if (!KNOWN_COMMANDS.includes(cmd)) {
     console.log("Unknown command: " + cmd);
     usage();
