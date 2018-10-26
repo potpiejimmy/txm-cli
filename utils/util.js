@@ -21,16 +21,8 @@ module.exports.spawn = async function(cmd, args, cwd) {
         stdio: [process.stdin, process.stdout, process.stderr]});
 
     return new Promise((resolve, reject) => {
-        childProcess.once('exit', (code, signal) => {
-            if (code === 0) {
-                resolve();
-            } else {
-                reject(new Error('Exit with error code: '+code));
-            }
-        });
-        childProcess.once('error', err => {
-            reject(err);
-        });
+        childProcess.once('exit', (code, signal) => resolve(code));
+        childProcess.once('error', err =>reject(err));
     });
 }
 

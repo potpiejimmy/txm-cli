@@ -1,4 +1,6 @@
 const fs = require('fs');
+const path = require('path');
+const util = require('../utils/util');
 
 function usage() {
     console.log("Usage:  txm server <cmd>");
@@ -7,15 +9,16 @@ function usage() {
     console.log();
     console.log("       list                         list configured servers.");
     console.log("       set <name> <path> [<type>]   set or update a server. type can be one of txm,rops,kko.");
-    console.log("       del <name>                   delete a server.");
     console.log("       default <name/prefix>        sets the current default server(s). can be a");
     console.log("                                    prefix to multiple server names to target");
     console.log("                                    multiple servers.");
+    console.log("       del <name>                   delete a server.");
+    console.log("       stop [<name/prefix>]         stops all running servers or the specified ones");
 
     process.exit();
 }
 
-function invoke(args) {
+async function invoke(args) {
 
     if (!args.length) usage();
 
@@ -24,6 +27,7 @@ function invoke(args) {
     else if ("set".startsWith(cmd)) set(args[1], args[2], args[3]);
     else if ("default".startsWith(cmd)) def(args[1]);
     else if ("del".startsWith(cmd)) del(args[1]);
+    else if ("stop".startsWith(cmd)) await stop(args[1]);
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -37,13 +41,14 @@ function list() {
         return;
     }
     let d = global.settings.value("defaults.server");
-    Object.keys(servers).forEach(key => {
-        console.log((servers[key].name.startsWith(d) ? "* " : "  ") +
-                     "[" + servers[key].name + "]\t" +
-                     servers[key].type + "\t" +
-                     servers[key].path + " " +
-                     "(" + servers[key].serverType + ", port " + servers[key].port + ")");
-    })
+    for (let key of Object.keys(servers)) {
+        let server = servers[key];
+        console.log((server.name.startsWith(d) ? "* " : "  ") +
+                     "[" + server.name + "]\t" +
+                     server.type + "\t" +
+                     server.path + " " +
+                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort : "") + ")");
+    }
     console.log();
     console.log("* = current default server(s) / deploy target(s)");
 }
@@ -74,9 +79,11 @@ function determineServerType(path) {
     if (fs.existsSync(path+"/deployments")) {
         let serverCfg = fs.readFileSync(path+"/configuration/standalone-full.xml");
         let port = /{jboss.http.port:(\d*)/.exec(serverCfg);
+        let managementPort = /{jboss.management.http.port:(\d*)/.exec(serverCfg);
         return {
             serverType: "jboss",
-            port: parseInt(port[1])
+            port: parseInt(port[1]),
+            managementPort: parseInt(managementPort[1])
         };
     } else if (fs.existsSync(path+"/dropins")) {
         let serverCfg = fs.readFileSync(path+"/server.xml");
@@ -98,6 +105,23 @@ function def(name) {
     if (!name) usage();
     global.settings.setValue("defaults.server", name);
     list();
+}
+
+async function stop(name) {
+    let servers = global.settings.value("servers");
+    if (!servers) return;
+    for (let key of Object.keys(servers)) {
+        let server = servers[key];
+        if (!name || server.name.startsWith(name)) {
+            let nativeServerName = path.basename(server.path);
+            console.log("Stopping server '" + nativeServerName + "' at " + server.path);
+            if (server.serverType == "jboss") {
+                await util.spawn("jboss-cli.bat", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin");
+            } else if (server.serverType == "wlp") {
+                await util.spawn("server.bat", ["stop", nativeServerName], server.path + "/../../../bin");
+            }
+        }
+    }
 }
 
 module.exports.invoke = invoke;
