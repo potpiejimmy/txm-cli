@@ -1,4 +1,5 @@
 const {exec,spawn} = require('child_process');
+const portscanner = require('portscanner');
 
 /**
  * Executes a command with promise
@@ -35,4 +36,11 @@ module.exports.spawnDetached = async function(cmd, args, cwd) {
         silent: true,
         detached: true,
         stdio: [null, null, null]});
+}
+
+/**
+ * Checks if a port is open, returns boolean
+ */
+module.exports.isPortOpen = async function(port) {
+    return portscanner.checkPortStatus(port, 'localhost').then(status => status === 'open');
 }

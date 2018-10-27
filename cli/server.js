@@ -111,12 +111,17 @@ async function stop(name) {
     if (!servers) return;
     for (let server of Object.values(servers)) {
         if (!name || server.name.startsWith(name)) {
-            let nativeServerName = path.basename(server.path);
-            console.log("Stopping server '" + nativeServerName + "' at " + server.path);
-            if (server.serverType == "jboss") {
-                await util.spawn("jboss-cli.bat", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin");
-            } else if (server.serverType == "wlp") {
-                await util.spawn("server.bat", ["stop", nativeServerName], server.path + "/../../../bin");
+            if (await util.isPortOpen(server.port)) {
+                let nativeServerName = path.basename(server.path);
+                console.log("Stopping server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
+                var win = process.platform === "win32";
+                if (server.serverType == "jboss") {
+                    await util.spawn(win ? "jboss-cli.bat" : "./jboss-cli.sh", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin");
+                } else if (server.serverType == "wlp") {
+                    await util.spawn(win ? "server.bat" : "./server", ["stop", nativeServerName], server.path + "/../../../bin");
+                }
+            } else {
+                console.log("Server '" + server.name + "' is not running.");
             }
         }
     }
