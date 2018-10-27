@@ -1,7 +1,8 @@
 const util = require('../utils/util');
 
 async function invoke(args) {
-    await util.spawn("npm.cmd",["update","-g","txm-cli"], process.cwd());
+    var win = process.platform === "win32";
+    await util.spawn(win ? "npm.cmd" : "npm",["update","-g","txm-cli"], process.cwd());
 }
 
 module.exports.invoke = invoke;
