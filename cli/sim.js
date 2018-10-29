@@ -12,17 +12,9 @@ async function invoke(args) {
     let chameleonpath = sbox.path + "\\runtime\\chameleon";
     let gwpath = sbox.path + "\\runtime\\fi-pbmc-fcgateway";
     let simpath = sbox.path + "\\runtime\\pbm-simclient";
-    let exeargs = [chameleonpath, gwpath, simpath, sbox.path, determineServerPort(servers), "false"];
+    let exeargs = [chameleonpath, gwpath, simpath, sbox.path, util.determineServerPort(servers), "false"];
     console.log(exeargs);
     util.spawnDetached(executable, exeargs, execpath);
-}
-
-function determineServerPort(servers) {
-    let d = global.settings.value("defaults.server");
-    for (let server of Object.values(servers)) {
-        if (server.name.startsWith(d) && server.type == 'txm') return server.port;
-    }
-    return 8080;
 }
 
 module.exports.invoke = invoke;

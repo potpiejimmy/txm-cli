@@ -44,3 +44,15 @@ module.exports.spawnDetached = async function(cmd, args, cwd) {
 module.exports.isPortOpen = async function(port) {
     return portscanner.checkPortStatus(port, 'localhost').then(status => status === 'open');
 }
+
+module.exports.determineServerPort = function(servers) {
+    let d = global.settings.value("defaults.server");
+    for (let server of Object.values(servers)) {
+        if (server.name.startsWith(d) && server.type == 'txm') return server.port;
+    }
+    return 8080;
+}
+
+module.exports.asyncPause = async function(timeout) {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+}
