@@ -1,6 +1,14 @@
 const util = require('../utils/util');
 const fs = require('fs');
 
+function usage() {
+    console.log("Usage:  txm cpgen [<cpgset>]");
+    console.log();
+    console.log("<cpgset> can be either '1' for HG0 import or '2' for HG1 import. Default is '1'.");
+
+    process.exit();
+}
+
 async function invoke(args) {
     
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
