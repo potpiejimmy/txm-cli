@@ -16,7 +16,7 @@ async function invoke(args) {
     configurePort(sbox);
     startStopServiceStation(sbox, false);
 
-    await util.asyncPause(5000); // wait 5 sec.
+    await util.asyncPause(12000); // wait 12 sec.
 
     if (!args[0] || args[0] === '1') {
         copyCpgFile("/fi-servicestation-client/etc/import", "R1400.cpg");
