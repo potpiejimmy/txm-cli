@@ -13,6 +13,7 @@ async function invoke(args) {
     let servers = global.settings.value("servers");
     for (let server of Object.values(servers)) {
         if (server.name.startsWith(defsrv)) {
+            console.log("-----");
             console.log("Deploying " + server.type + " to " + server.path);
             await deployServer(sbox, server);
         }
@@ -46,11 +47,11 @@ async function deployServer(sbox, server) {
         path += "/WEB-INF/lib/fi-ocm-wf.jar";
         unjar(path);
     }
-    console.log("Successfully deployed.");
+    console.log("Successfully deployed " + server.type + " application.");
 }
 
 function unjar(path) {
-    console.log("Unjar " + path);
+    console.log("Exploding " + path);
     let tmpfile = path + ".extracting";
     fs.renameSync(path,tmpfile);
     var ear = new AdmZip(tmpfile);
