@@ -45,10 +45,10 @@ module.exports.isPortOpen = async function(port) {
     return portscanner.checkPortStatus(port, 'localhost').then(status => status === 'open');
 }
 
-module.exports.determineServerPort = function(servers) {
+module.exports.determineServerPort = function(servers, type='txm') {
     let d = global.settings.value("defaults.server");
     for (let server of Object.values(servers)) {
-        if (server.name.startsWith(d) && server.type == 'txm') return server.port;
+        if (server.name.startsWith(d) && server.type == type) return server.port;
     }
     return 8080;
 }

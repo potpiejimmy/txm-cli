@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","sim","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","sim","ropssim","dump"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
@@ -20,6 +20,7 @@ function usage() {
     console.log("       cpgen [n]  performs CPGEN import of cpg file set n (1,2).");
     console.log("       all        do everything, clean rebuild, createDB and deploy.");
     console.log("       sim        configures and runs the PBM simulator GUI.");
+    console.log("       ropssim    configures and runs ROPS gateway and ROPS cmd client.");
     console.log("       dump       dumps all current settings as JSON.");
     console.log();
     let defaults = global.settings.value("defaults");
