@@ -116,7 +116,7 @@ async function stop(name) {
                 console.log("Stopping server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
                 var win = process.platform === "win32";
                 if (server.serverType == "jboss") {
-                    await util.spawn(win ? "jboss-cli.bat" : "./jboss-cli.sh", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin");
+                    await util.spawn(win ? "jboss-cli.bat" : "./jboss-cli.sh", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin", "\n");
                 } else if (server.serverType == "wlp") {
                     await util.spawn(win ? "server.bat" : "./server", ["stop", nativeServerName], server.path + "/../../../bin");
                 }

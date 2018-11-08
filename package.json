@@ -1,6 +1,6 @@
 {
   "name": "txm-cli",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "The ultimate CLI from Transaction Middleware (TXM)",
   "main": "cli.js",
   "scripts": {

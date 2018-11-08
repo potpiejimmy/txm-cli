@@ -14,12 +14,14 @@ module.exports.exec = async function(cmdline, cwd) {
 }
 
 /**
- * Spawns a child command with inherited stdio
+ * Spawns a child command with inherited stdio.
  */
-module.exports.spawn = async function(cmd, args, cwd) {
+module.exports.spawn = async function(cmd, args, cwd, stdindata) {
     const childProcess = spawn(cmd, args, {
         cwd: cwd,
-        stdio: [process.stdin, process.stdout, process.stderr]});
+        stdio: [stdindata ? 'pipe' : process.stdin, process.stdout, process.stderr]});
+
+    if (stdindata) childProcess.stdin.write(stdindata);
 
     return new Promise((resolve, reject) => {
         childProcess.once('exit', (code, signal) => resolve(code));
