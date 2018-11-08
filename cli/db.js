@@ -10,6 +10,7 @@ function usage() {
     console.log("       set <user> <pw>    sets current DB user and password.");
     console.log("       create             (re)creates the database schema (runs createDb.sh).");
     console.log("       norops             disables ROPS (executes disable-rops.sql).");
+    console.log("       devinit            initializes dev system (executes devsystem_init.sql).");
     console.log();
     showCurrentSettings();
     
@@ -22,7 +23,8 @@ async function invoke(args) {
     let cmd = args[0];
     if ("create".startsWith(cmd)) await createDB();
     else if ("set".startsWith(cmd)) await configureDB(args[1], args[2]);
-    else if ("norops".startsWith(cmd)) await disableRops();
+    else if ("norops".startsWith(cmd)) await executeSQL("disable-rops.sql");
+    else if ("devinit".startsWith(cmd)) await executeSQL("devsystem_init.sql");
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -62,10 +64,10 @@ async function configureDB(user, pw) {
     showCurrentSettings();
 }
 
-async function disableRops() {
+async function executeSQL(script) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     var win = process.platform === "win32";
-    await util.spawn(win ? "sqlplus.exe" : "sqlplus", [getDBConnectionString(), "@disable-rops.sql"], sbox.path+"/fi-asm-assembly/install/sql");
+    await util.spawn(win ? "sqlplus.exe" : "sqlplus", [getDBConnectionString(), "@"+script], sbox.path+"/fi-asm-assembly/install/sql", "quit\n");
 }
 
 module.exports.invoke = invoke;
