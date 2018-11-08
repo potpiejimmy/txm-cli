@@ -1,6 +1,6 @@
 {
   "name": "txm-cli",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "The ultimate CLI from Transaction Middleware (TXM)",
   "main": "cli.js",
   "scripts": {
@@ -25,6 +25,7 @@
     "del": "^3.0.0",
     "jszip": "^3.1.5",
     "portscanner": "^2.2.0",
+    "properties-reader": "0.0.16",
     "settings-store": "^1.4.1"
   }
 }

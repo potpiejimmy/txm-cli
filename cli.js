@@ -16,7 +16,7 @@ function usage() {
     console.log("                  to the current default server(s).");
     console.log("       build      do a gradlew build without recreating runtime folder.");
     console.log("       rebuild    do a clean build with new runtime folder.");
-    console.log("       db         recreate DB schema.");
+    console.log("       db         manage your databases.");
     console.log("       cpgen [n]  performs CPGEN import of cpg file set n (1,2).");
     console.log("       all        do everything, clean rebuild, createDB and deploy.");
     console.log("       sim        configures and runs the PBM simulator GUI.");
