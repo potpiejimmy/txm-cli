@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const fetch = require('node-fetch');
 const util = require('../utils/util');
 
 function usage() {
@@ -14,6 +15,7 @@ function usage() {
     console.log("                                    multiple servers.");
     console.log("       del <name>                   delete a server.");
     console.log("       stop [<name/prefix>]         stops all running servers or the specified ones");
+    console.log("       start [<name/prefix>]        starts the default servers or the specified ones");
 
     process.exit();
 }
@@ -28,6 +30,7 @@ async function invoke(args) {
     else if ("default".startsWith(cmd)) def(args[1]);
     else if ("del".startsWith(cmd)) del(args[1]);
     else if ("stop".startsWith(cmd)) await stop(args[1]);
+    else if ("start".startsWith(cmd)) await start(args[1]);
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -125,6 +128,60 @@ async function stop(name) {
             }
         }
     }
+}
+
+async function start(name) {
+    let servers = global.settings.value("servers");
+    if (!servers) return;
+    let d = name || global.settings.value("defaults.server");
+
+    // start servers:
+    for (let server of Object.values(servers)) {
+        if (server.name.startsWith(d)) {
+            if (!await util.isPortOpen(server.port)) {
+                let nativeServerName = path.basename(server.path);
+                console.log("Starting server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
+                var win = process.platform === "win32";
+                if (server.serverType == "jboss") {
+                    console.log("Sorry, starting of JBoss servers is not supported yet.");
+                } else if (server.serverType == "wlp") {
+                    await util.spawn(win ? "server.bat" : "./server", ["start", nativeServerName], server.path + "/../../../bin");
+                }
+            } else {
+                console.log("Server '" + server.name + "' is already running.");
+            }
+        }
+    }
+
+    // wait for the txm type servers to be ready:
+    for (let server of Object.values(servers)) {
+        if (server.name.startsWith(d)) {
+            if (server.type === 'txm') {
+                console.log("Waiting for server '" + server.name + " to be ready.");
+                await waitForServerReady(server);
+            }
+        }
+    }
+}
+
+async function waitForServerReady(server) {
+    let serverReady = false;
+    do {
+        try {
+            let res = await fetch("http://localhost:"+server.port+"/rs/api/login", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: "{}"
+            });
+            let resdata = await res.json();
+            // when we get 'IllegalArgumentException' the server is ready.
+            serverReady = resdata && resdata.error && resdata.error.includes("IllegalArgumentException");
+        } catch (err) {
+            serverReady = false;
+        }
+        if (!serverReady) await util.asyncPause(1000);
+    } while (!serverReady);
+    console.log("Server " + server.name + " is ready.");
 }
 
 module.exports.invoke = invoke;
