@@ -1,5 +1,6 @@
 const fs = require('fs');
 const del = require('del');
+const ncp = require('ncp');
 var JSZip = require("jszip");
 var AdmZip = require('adm-zip');
 
@@ -39,6 +40,7 @@ async function deployServer(sbox, server) {
     console.log("Extracting " + path);
     await extractEarFromDist(sbox.path + "/fi-asm-assembly/build/distributions/fi-asm-assembly-19.0.00-SNAPSHOT.zip", earorigin, path);
 
+    let basepath = path;
     if (server.type != 'rops') {
         // for txm and kko servers, explode the ear, war and FI fragment:
         unjar(path);
@@ -47,6 +49,24 @@ async function deployServer(sbox, server) {
         path += "/WEB-INF/lib/fi-ocm-wf.jar";
         unjar(path);
     }
+
+    if (server.serverType === 'jboss' && server.type === 'txm') {
+        console.log("> Fixing deployment for JBoss");
+        path = basepath + "/lib/DynsFramework.jar";
+        unjar(path);
+        path = basepath + "/fi-eisco-dyns-ejb.jar";
+        unjar(path);
+        path += "/de";
+        await copytree(path, basepath + "/lib/DynsFramework.jar/de");
+        deltree(path);
+        path = basepath + "/GenericRA.rar";
+        unjar(path);
+        await copytree(path, basepath + "/lib");
+        deltree(path+"/*.jar");
+        try {deltree(basepath+"/lib/META-INF");} catch (e) {}
+        console.log("> Done fixing deployment for JBoss");
+    }
+
     console.log("Successfully deployed " + server.type + " application.");
 }
 
@@ -63,15 +83,18 @@ function deltree(path) {
     del.sync([path], {force: true});
 }
 
+async function copytree(source, dest) {
+    return new Promise((resolve,reject) => {
+        ncp.ncp(source, dest, err => {
+            if (err) return reject(err);
+            resolve();
+        })
+    });
+}
+
 async function extractEarFromDist(zipfile, earfile, outfile) {
 
-    let zipdata = await new Promise((resolve,reject) => {
-        fs.readFile(zipfile, (err, data) => {
-            if (err) reject(err);
-            else resolve(data);
-        });
-    });
-
+    let zipdata = fs.readFileSync(zipfile);
     let zip = await JSZip.loadAsync(zipdata);
     let data = await zip.file(earfile).async("uint8array");
 
