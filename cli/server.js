@@ -10,9 +10,9 @@ function usage() {
     console.log();
     console.log("       list                         list configured servers.");
     console.log("       set <name> <path> [<type>]   set or update a server. type can be one of txm,rops,kko.");
-    console.log("       default <name/prefix>        sets the current default server(s). can be a");
+    console.log("       default <name prefix/no.>    sets the current default server(s). can be a");
     console.log("                                    prefix to multiple server names to target");
-    console.log("                                    multiple servers.");
+    console.log("                                    multiple servers or a specific index no.");
     console.log("       del <name>                   delete a server.");
     console.log("       stop [<name/prefix>]         stops all running servers or the specified ones");
     console.log("       start [<name/prefix>]        starts the default servers or the specified ones");
@@ -44,8 +44,10 @@ function list() {
         return;
     }
     let d = global.settings.value("defaults.server");
+    let index = 1;
     for (let server of Object.values(servers)) {
         console.log((server.name.startsWith(d) ? "* " : "  ") +
+                     "[" + index++ + "]\t" +
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
                      server.path + " " +
@@ -105,6 +107,12 @@ function del(name) {
 
 function def(name) {
     if (!name) usage();
+    let index;
+    try { index = parseInt(name); } catch (e) {};
+    if (index) {
+        // setting by index:
+        name = Object.keys(global.settings.value("servers"))[index-1];
+    }
     global.settings.setValue("defaults.server", name);
     list();
 }
