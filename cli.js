@@ -21,7 +21,7 @@ function usage() {
     console.log("       all        do everything, clean rebuild, createDB and deploy.");
     console.log("       func       manage custom function chains.");
     console.log("       sim        configures and runs the PBM simulator GUI.");
-    console.log("       ropssim    configures and runs ROPS gateway and ROPS cmd client.");
+    console.log("       ropssim    configures and runs ROPS gateway and ROPS cmd client. If an arg gui is provided, a graphical version will start.");
     console.log("       dump       dumps all current settings as JSON.");
     console.log();
     let defaults = global.settings.value("defaults");
