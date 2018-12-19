@@ -20,13 +20,22 @@ async function invoke(args) {
 
     //util.spawn("", exeargs, execpath);
     console.log("ROPS gateway is running");
-    await util.spawn("java", [
-        "com.myproclassic.si.rops.simclient.simClient",
-         "R3768T07", "localhost",
-         "5160",
-         "127.000.000.001",
-         "12345"], 
-         sbox.path + "/fi-rops-sim-client/build/classes/java/main");
+		
+	if(args[0] === "gui")
+	{
+		await util.spawn(win ? "fi-rops-sim-client2.bat" : "fi-rops-sim-client2", [], sbox.path + "/runtime/fi-rops-sim-client2/bin");
+		console.log("Rops gui is running. Cli blocked until you close the window.");
+	}
+	else
+	{
+		await util.spawn("java", [
+			"com.myproclassic.si.rops.simclient.simClient",
+			"R3768T07", "localhost",
+			"5160",
+			"127.000.000.001",
+			"12345"], 
+			sbox.path + "/fi-rops-sim-client/build/classes/java/main");
+	}
 
     // stopping gateway:
     console.log("Stopping ROPS gateway...");
