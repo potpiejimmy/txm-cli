@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","sim","ropssim","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","dump"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
@@ -19,6 +19,7 @@ function usage() {
     console.log("       db         manage your databases.");
     console.log("       cpgen [n]  performs CPGEN import of cpg file set n (1,2).");
     console.log("       all        do everything, clean rebuild, createDB and deploy.");
+    console.log("       func       manage custom function chains.");
     console.log("       sim        configures and runs the PBM simulator GUI.");
     console.log("       ropssim    configures and runs ROPS gateway and ROPS cmd client.");
     console.log("       dump       dumps all current settings as JSON.");
@@ -45,24 +46,33 @@ if (process.argv.length<3) usage();
 // now start the actual sub command program:
 let cmd = process.argv[2];
 
-// allow abbreviation of all commands:
-for (let c of KNOWN_COMMANDS) {
-    if (c.startsWith(cmd)) cmd = c;
-}
+async function callCli(cmd, args) {
 
-if (!KNOWN_COMMANDS.includes(cmd)) {
-    console.log("Unknown command: " + cmd);
-    usage();
-}
+    // allow abbreviation of all commands:
+    for (let c of KNOWN_COMMANDS) {
+        if (c.startsWith(cmd)) cmd = c;
+    }
 
-callCli(cmd);
+    if (!KNOWN_COMMANDS.includes(cmd)) {
+        console.log("Unknown command: " + cmd);
+        usage();
+    }
 
-async function callCli(cmd) {
     try {
         let cli = require("./cli/" + cmd);
-        await cli.invoke(process.argv.slice(3));
+        await cli.invoke(args);
     } catch (err) {
         console.log(err);
     }
+}
+
+async function callCliAndExit(cmd, args) {
+    await callCli(cmd, args);
     process.exit();
 }
+
+// make callCli available for function chains (func.js):
+global.callCli = callCli;
+
+// call the CLI command:
+callCliAndExit(cmd, process.argv.slice(3));
