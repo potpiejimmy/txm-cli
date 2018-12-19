@@ -21,10 +21,10 @@ async function invoke(args) {
     //util.spawn("", exeargs, execpath);
     console.log("ROPS gateway is running");
 		
-	if(args[0] === "gui")
+	if(args[0] === "ui")
 	{
 		await util.spawn(win ? "fi-rops-sim-client2.bat" : "fi-rops-sim-client2", [], sbox.path + "/runtime/fi-rops-sim-client2/bin");
-		console.log("Rops gui is running. Cli blocked until you close the window.");
+		console.log("ROPS GUI is running. CLI blocked until you close the window.");
 	}
 	else
 	{
