@@ -22,14 +22,16 @@ async function invoke(args) {
 }
 
 async function deployServer(sbox, server) {
+    let sandboxVersionFile = fs.readFileSync(sbox.path+"/version.txt");
+    let sandboxVersion = /([\d\.]*)-.*/.exec(sandboxVersionFile)[1];
     let earname = "txm-server.ear";
-    let earorigin = "fi-asm-assembly-19.0.00-SNAPSHOT/txm-server.ear";
+    let earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/txm-server.ear";
     if (server.type == 'rops') {
         earname = "txm-server-rops.ear";
-        earorigin = "fi-asm-assembly-19.0.00-SNAPSHOT/fi-asm-assembly-rops/txm-server-rops.ear";
+        earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-rops/txm-server-rops.ear";
     } else if (server.type == 'kko') {
         earname = "txm-server-vorrechner.ear";
-        earorigin = "fi-asm-assembly-19.0.00-SNAPSHOT/fi-asm-assembly-vorrechner/txm-server-vorrechner.ear";
+        earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-vorrechner/txm-server-vorrechner.ear";
     }
     let path = server.path;
     if (fs.existsSync(path+"/deployments")) path += "/deployments/";
@@ -38,7 +40,7 @@ async function deployServer(sbox, server) {
     console.log("Deleting " + path);
     deltree(path);
     console.log("Extracting " + path);
-    await extractEarFromDist(sbox.path + "/fi-asm-assembly/build/distributions/fi-asm-assembly-19.0.00-SNAPSHOT.zip", earorigin, path);
+    await extractEarFromDist(sbox.path + "/fi-asm-assembly/build/distributions/fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT.zip", earorigin, path);
 
     let basepath = path;
     if (server.type != 'rops') {
