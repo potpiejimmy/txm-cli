@@ -33,6 +33,7 @@ async function deployServer(sbox, server) {
         earname = "txm-server-vorrechner.ear";
         earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-vorrechner/txm-server-vorrechner.ear";
     }
+    console.log("EAR file: " + earorigin);
     let path = server.path;
     if (fs.existsSync(path+"/deployments")) path += "/deployments/";
     else path += "/dropins/";
