@@ -20,9 +20,9 @@ async function invoke(args) {
 
     if (!args[0] || args[0] === '1') {
         copyCpgFile("/fi-servicestation-client/etc/import", "R1400.cpg");
-        copyCpgFile("/Projects/SI/Server/ServiceStation/testsrc/testfiles_daten.neu/kko", "R3768_links.cpg");
+        copyCpgFile("/fi-servicestation-client/cpgenfiles/testfiles_daten.neu/kko", "R3768_links.cpg");
     } else if (args[0] === '2') {
-        copyCpgFile("/Projects/SI/Server/ServiceStation/testsrc/testfiles_daten.neu/kko", "R3769_rechts.cpg");
+        copyCpgFile("/fi-servicestation-client/cpgenfiles/testfiles_daten.neu/kko", "R3769_rechts.cpg");
     }
 
     await waitImportDirEmpty(sbox);
