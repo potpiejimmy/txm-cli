@@ -58,9 +58,9 @@ function toBase64(input) {
 }
 
 async function lastbn(version) {
-    let authToken = process.env.npm_config_txm_auth_nexusde;
+    let authToken = await util.getNPMConfigValue('txm-auth-nexusde');
     if (!authToken) {
-        console.log("Warning: No authentication token for nexusde found. Set it using 'npm config set txm_auth_nexusde <token>'");
+        console.log("Warning: No authentication token for nexusde found. Set it using 'npm config set txm-auth-nexusde <token>'");
         return;
     }
 	let url = "https://nexusde.dieboldnixdorf.com/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
@@ -69,9 +69,9 @@ async function lastbn(version) {
 	if(!result)
 	{
 		console.log("No build found for this release on new nexus server, try old one.");
-		authToken = process.env.npm_config_txm_auth_davis;
+		authToken = await util.getNPMConfigValue('txm-auth-davis');
         if (!authToken) {
-            console.log("Warning: No authentication token for davis found. Set it using 'npm config set txm_auth_davis <token>'");
+            console.log("Warning: No authentication token for davis found. Set it using 'npm config set txm-auth-davis <token>'");
             return;
         }
         url = "https://davis.wincor-nixdorf.com/nexus/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
