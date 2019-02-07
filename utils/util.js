@@ -1,5 +1,6 @@
 const {exec,spawn} = require('child_process');
 const portscanner = require('portscanner');
+const fs = require('fs');
 
 /**
  * Executes a command with promise
@@ -53,6 +54,14 @@ module.exports.determineServerPort = function(servers, type='txm') {
         if (server.name.startsWith(d) && server.type == type) return server.port;
     }
     return 8080;
+}
+
+module.exports.determineSandboxVersion = function(sbox) {
+    sbox = sbox || global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
+    if (!sbox) return null;
+    let sandboxVersionFile = fs.readFileSync(sbox.path+"/version.txt");
+    let sandboxVersion = /([\d\.]*)-.*/.exec(sandboxVersionFile)[1];
+    return sandboxVersion;
 }
 
 module.exports.asyncPause = async function(timeout) {

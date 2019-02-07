@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","lastbn","dump"];
 
 function usage() {
     console.log("Usage:  txm <cmd>");
@@ -9,7 +9,7 @@ function usage() {
     console.log("with <cmd> being one of");
     console.log();
     console.log("       version      display version info.");
-    console.log("       update       updates CLI to most recent version.");
+    console.log("       update       update CLI to most recent version.");
     console.log("       server       manage your servers.");
     console.log("       sandbox      manage your sandboxes.");
     console.log("       deploy       deploy and explode EARs from the current default sandbox");
@@ -17,13 +17,15 @@ function usage() {
     console.log("       build        do a gradlew build without recreating runtime folder.");
     console.log("       rebuild      do a clean build with new runtime folder.");
     console.log("       db           manage your databases.");
-    console.log("       cpgen [n]    performs CPGEN import of cpg file set n (1,2).");
+    console.log("       cpgen [n]    perform CPGEN import of cpg file set n (1,2).");
     console.log("       all          do everything, clean rebuild, createDB and deploy.");
     console.log("       func         manage custom function chains.");
-    console.log("       sim          configures and runs the PBM simulator GUI.");
-    console.log("       ropssim [ui] configures and runs ROPS gateway and ROPS cmd client,");
+    console.log("       sim          configure and run the PBM simulator GUI.");
+    console.log("       ropssim [ui] configure and run ROPS gateway and ROPS cmd client,");
     console.log("                    specify argument 'ui' to start the GUI version.");
-    console.log("       dump         dumps all current settings as JSON.");
+    console.log("       lastbn [rel] display last build number (and copy to clipboard),");
+    console.log("                    specify [rel], e.g. '19.0.10', to use non-default.");
+    console.log("       dump         dump all current settings as JSON.");
     console.log();
     let defaults = global.settings.value("defaults");
     if (defaults) {
