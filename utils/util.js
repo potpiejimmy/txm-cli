@@ -76,7 +76,11 @@ module.exports.getNPMConfigValue = async function(key) {
     let result = "";
     childProcess.stdout.on('data', d => result += d);
     return new Promise((resolve, reject) => {
-        childProcess.once('exit', (code, signal) => resolve(result.replace(/\n$/,'')));
+        childProcess.once('exit', (code, signal) => {
+            let value = result.replace(/\n$/,'');
+            if (value === "undefined") value = null;
+            resolve(value);
+        });
         childProcess.once('error', err =>reject(err));
     });
 }

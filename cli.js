@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","lastbn","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","lastbn","dump"];
 
 function usage() {
-    console.log("Usage:  txm <cmd>");
+    console.log("Usage:  tm <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();
@@ -12,6 +12,7 @@ function usage() {
     console.log("       update       update CLI to most recent version.");
     console.log("       server       manage your servers.");
     console.log("       sandbox      manage your sandboxes.");
+    console.log("       config       manage general configuration settings.");
     console.log("       deploy       deploy and explode EARs from the current default sandbox");
     console.log("                    to the current default server(s).");
     console.log("       build        do a gradlew build without recreating runtime folder.");

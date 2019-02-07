@@ -1,5 +1,5 @@
 function usage() {
-    console.log("Usage:  txm func <cmd>");
+    console.log("Usage:  tm func <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();
@@ -13,7 +13,7 @@ function usage() {
     console.log("commands: 'txm build', txm server def hg0', 'txm deploy', use the following");
     console.log("command:");
     console.log();
-    console.log("       txm func f1 \"b:s def hg0:dep\"");
+    console.log("       tm func f1 \"b:s def hg0:dep\"");
     console.log();
     console.log("Tip: Use \" \" as chain definition to delete a function chain.");
     console.log();

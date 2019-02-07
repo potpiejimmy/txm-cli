@@ -58,22 +58,16 @@ function toBase64(input) {
 }
 
 async function lastbn(version) {
-    let authToken = await util.getNPMConfigValue('txm-auth-nexusde');
-    if (!authToken) {
-        console.log("Warning: No authentication token for nexusde found. Set it using 'npm config set txm-auth-nexusde <token>'");
-        return;
-    }
+    let authToken = await getAuthToken('auth-nexusde');
+    if (!authToken) return;
 	let url = "https://nexusde.dieboldnixdorf.com/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
 	let result = await askServer(url, version, authToken);
 	//new server has no result, try again against old server
 	if(!result)
 	{
 		console.log("No build found for this release on new nexus server, try old one.");
-		authToken = await util.getNPMConfigValue('txm-auth-davis');
-        if (!authToken) {
-            console.log("Warning: No authentication token for davis found. Set it using 'npm config set txm-auth-davis <token>'");
-            return;
-        }
+		authToken = await getAuthToken('auth-davis');
+        if (!authToken) return;
         url = "https://davis.wincor-nixdorf.com/nexus/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
 		result = await askServer(url, version, authToken);
 	}
@@ -88,8 +82,22 @@ async function lastbn(version) {
 		
 	}
 	else {
-		console.log("No build found for this release vesion!");
+		console.log("No build found for this release version!");
 	}
+}
+
+async function getAuthToken(key) {
+	let authToken = global.settings.value("config."+key);
+	if (!authToken) {
+		// if not set in local config, get from NPM variable:
+		authToken = await util.getNPMConfigValue('txm-'+key);
+		if (authToken) global.settings.setValue("config."+key, authToken);
+	}
+    if (!authToken) {
+        console.log("Warning: No authentication token '"+key+"' found. Set it using 'tm config set "+key+" <token>'");
+        return null;
+	}
+	return authToken;
 }
 
 async function askServer(url, version, authToken) {
