@@ -7,7 +7,7 @@ async function invoke(args) {
         console.log("Please configure default sandbox and server(s) first.");
         return;
     }
-    let execpath = sbox.path + "\\Projects\\SI\\Tools\\PBMSimulatorGUI\\SimulationFiles";
+    let execpath = sbox.path + "\\fi-tools-dev-pbmsimclientgui\\SimulationFiles";
     let executable = execpath + "\\SIPbmSimulatorConfigurator.exe";
     let chameleonpath = sbox.path + "\\runtime\\chameleon";
     let gwpath = sbox.path + "\\runtime\\fi-pbmc-fcgateway";
