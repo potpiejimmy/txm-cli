@@ -3,6 +3,7 @@ const del = require('del');
 const ncp = require('ncp');
 var JSZip = require("jszip");
 var AdmZip = require('adm-zip');
+const util = require('../utils/util');
 
 async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
@@ -22,8 +23,7 @@ async function invoke(args) {
 }
 
 async function deployServer(sbox, server) {
-    let sandboxVersionFile = fs.readFileSync(sbox.path+"/version.txt");
-    let sandboxVersion = /([\d\.]*)-.*/.exec(sandboxVersionFile)[1];
+    let sandboxVersion = util.determineSandboxVersion(sbox);
     let earname = "txm-server.ear";
     let earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/txm-server.ear";
     if (server.type == 'rops') {

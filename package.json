@@ -1,7 +1,7 @@
 {
   "name": "txm-cli",
-  "version": "0.2.4",
-  "description": "The ultimate CLI from Transaction Middleware (TXM)",
+  "version": "0.3.0",
+  "description": "The ultimate CLI from Transaction Middleware (TM)",
   "main": "cli.js",
   "scripts": {
     "start": "node cli.js",
@@ -18,10 +18,11 @@
   "author": "Thorsten Liese",
   "license": "ISC",
   "bin": {
-    "txm": "./cli.js"
+    "tm": "./cli.js"
   },
   "dependencies": {
     "adm-zip": "^0.4.13",
+    "clipboardy": "^1.2.3",
     "del": "^3.0.0",
     "jszip": "^3.1.5",
     "ncp": "^2.0.0",
