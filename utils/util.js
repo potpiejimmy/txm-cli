@@ -1,4 +1,4 @@
-const {exec,spawn} = require('child_process');
+const {exec,spawn,spawnSync} = require('child_process');
 const portscanner = require('portscanner');
 const fs = require('fs');
 
@@ -66,4 +66,17 @@ module.exports.determineSandboxVersion = function(sbox) {
 
 module.exports.asyncPause = async function(timeout) {
     return new Promise(resolve => setTimeout(resolve, timeout));
+}
+
+module.exports.getNPMConfigValue = async function(key) {
+    var win = process.platform === "win32";
+    const childProcess = spawn(win ? 'npm.cmd' : 'npm', ['config', 'get', key],
+        { stdio: ['ignore', 'pipe', 'pipe'] });
+    
+    let result = "";
+    childProcess.stdout.on('data', d => result += d);
+    return new Promise((resolve, reject) => {
+        childProcess.once('exit', (code, signal) => resolve(result.replace(/\n$/,'')));
+        childProcess.once('error', err =>reject(err));
+    });
 }
