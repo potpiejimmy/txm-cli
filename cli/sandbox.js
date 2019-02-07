@@ -1,5 +1,5 @@
 function usage() {
-    console.log("Usage:  txm sandbox <cmd>");
+    console.log("Usage:  tm sandbox <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();

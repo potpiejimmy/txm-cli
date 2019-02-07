@@ -3,7 +3,7 @@ const util = require('../utils/util');
 const propreader = require('properties-reader');
 
 function usage() {
-    console.log("Usage:  txm db <cmd>");
+    console.log("Usage:  tm db <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();

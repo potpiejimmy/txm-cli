@@ -4,7 +4,7 @@ const fetch = require('node-fetch');
 const util = require('../utils/util');
 
 function usage() {
-    console.log("Usage:  txm server <cmd>");
+    console.log("Usage:  tm server <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();
