@@ -9,7 +9,7 @@ async function invoke(args) {
     // second, if no argument, determine the release version from the current sandbox's version.txt
     // last, if no sandbox present, use the default version
     let version = args[0] || util.determineSandboxVersion() || '19.0.10';
-    return lastbn(version);
+    return lastbn(version, args);
 }
 
 function parseNo(str,begin,end) {
@@ -19,37 +19,37 @@ function parseNo(str,begin,end) {
 }
 
 async function downloadFile(url, name, size, authToken) {
-		console.log("Download " + url + " to " + name);
-		var start = new Date();
-		fetch(url, {
+	console.log("Downloading " + url + " to " + name);
+	var start = new Date();
+	return fetch(url, {
 		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
-		})
-		.then(res => {
-			const dest = fs.createWriteStream(name);
-			res.body.pipe(dest);
-			dest.on('finish', function() {
-				const stats = fs.statSync(name)
-				var end = (new Date() - start)/1000;
-				console.info('Execution time: %ds', end)
-				console.info('Size: ' + stats.size + ' of ' + size)
-			});
+	})
+	.then(res => new Promise((resolve,reject) => {
+		const dest = fs.createWriteStream(name);
+		res.body.pipe(dest);
+		dest.on('finish', () => {
+			const stats = fs.statSync(name)
+			var end = (new Date() - start)/1000;
+			console.info('Execution time: %ds', end)
+			console.info('Size: ' + stats.size + ' of ' + size)
+			resolve();
 		});
+		dest.on('error', err => reject(err));
+	}));
 }
 
-function download(result, authToken) {
-	if(process.argv.length > 3 && process.argv[3] === 'd' )
-		{
-			fetch(result.resourceURI, {
-				headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
-			})
-			.then(result => result.json())
-			.then(result => {
+async function download(result, authToken, args) {
+	if (args[1] === 'd' ) {
+		return fetch(result.resourceURI, {
+			headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
+		})
+		.then(result => result.json())
+		.then(result => {
 			result = result.data.filter(i => i.resourceURI.endsWith(".zip"));
-						
-			downloadFile(result[0].resourceURI, result[0].text, result[0].sizeOnDisk, authToken);
-
-			}).catch((err) => console.log("Can not read download link for " + version + " " + err));
-		}
+			return downloadFile(result[0].resourceURI, result[0].text, result[0].sizeOnDisk, authToken);
+		})
+		.catch((err) => console.log("Can not read download link for " + version + " " + err));
+	}
 }
 
 function toBase64(input) {
@@ -57,7 +57,7 @@ function toBase64(input) {
 	return outBase64;
 }
 
-async function lastbn(version) {
+async function lastbn(version, args) {
     let authToken = await getAuthToken('auth-nexusde');
     if (!authToken) return;
 	let url = "https://nexusde.dieboldnixdorf.com/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
@@ -78,8 +78,7 @@ async function lastbn(version) {
 		
 		clipboardy.writeSync(">"+result.text);
 		
-		download(result, authToken);
-		
+		return download(result, authToken, args);
 	}
 	else {
 		console.log("No build found for this release version!");
