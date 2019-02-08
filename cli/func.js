@@ -10,7 +10,7 @@ function usage() {
     console.log("Example:");
     console.log();
     console.log("To define a function chain named 'f1' that executes the following chain of");
-    console.log("commands: 'txm build', txm server def hg0', 'txm deploy', use the following");
+    console.log("commands: 'tm build', tm server def hg0', 'tm deploy', use the following");
     console.log("command:");
     console.log();
     console.log("       tm func f1 \"b:s def hg0:dep\"");
