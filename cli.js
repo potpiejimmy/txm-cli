@@ -23,11 +23,14 @@ function usage() {
     console.log("       func           manage custom function chains.");
     console.log("       sim            configure and run the PBM simulator GUI.");
     console.log("       ropssim [ui]   configure and run ROPS gateway and ROPS cmd client,");
-    console.log("                      specify argument 'ui' to start the GUI version.");
-    console.log("       lastbn [r] [d] display last build number (and copy to clipboard),");
-    console.log("                      specify r (e.g. '19.0.00') for non-default version,");
-    console.log("                      specify 'd' to download the artifact from nexus.");
+    console.log("                      specify option 'ui' to start the GUI version.");
+    console.log("       lastbn <r> [d] display last build number (and copy to clipboard),");
+    console.log("                      with <r> being the desired version (e.g. '19.0.00'),");
+    console.log("                      if <r> is omitted, the current sandbox version is used,");
+    console.log("                      specify option 'd' to download the artifact from Nexus.");
     console.log("       dump           dump all current settings as JSON.");
+    console.log();
+    console.log("All commands can be abbreviated, for instance 'l' for 'lastbn'.");
     console.log();
     let defaults = global.settings.value("defaults");
     if (defaults) {
