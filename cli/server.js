@@ -151,7 +151,7 @@ async function start(name) {
                 console.log("Starting server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
                 var win = process.platform === "win32";
                 if (server.serverType == "jboss") {
-                    console.log("Sorry, starting of JBoss servers is not supported yet.");
+                    await startJBoss(server);
                 } else if (server.serverType == "wlp") {
                     await util.spawn(win ? "server.bat" : "./server", ["start", nativeServerName], server.path + "/../../../bin");
                 }
@@ -170,6 +170,67 @@ async function start(name) {
             }
         }
     }
+}
+
+async function startJBoss(server) {
+    let serverBaseDir = path.dirname(server.path);
+    let args = [];
+    args.push("-cp");
+    args.push(server.path+"/../jboss-modules.jar");
+
+    // VM options:
+    args.push("-Xms512m");
+    args.push("-Xmx2048m");
+    args.push("-XX:MetaspaceSize=96M");
+    args.push("-XX:MaxMetaspaceSize=512m");
+    args.push("-Dorg.jboss.resolver.warning=true");
+    args.push("-Djava.net.preferIPv4Stack=true");
+    args.push("-Dsun.rmi.dgc.client.gcInterval=3600000");
+    args.push("-Dsun.rmi.dgc.server.gcInterval=3600000");
+    args.push("-Djboss.modules.system.pkgs=org.jboss.byteman");
+    args.push("-Djava.awt.headless=true");
+    args.push("-Dorg.jboss.boot.log.file="+server.path+"/log/boot.log");
+    args.push("-Dlogging.configuration=file:"+server.path+"/configuration/logging.properties");
+    args.push("-Djboss.home.dir="+serverBaseDir);
+    args.push("-Dorg.jboss.logmanager.nocolor=true");
+    args.push("-Djboss.bind.address.management=localhost");
+
+    // Server options:
+    args.push("-DUMG_ENV_TYPE=nicht-prod");
+    args.push("-Dcom.ibm.ws.cdi.immediate.ejb.start=true");
+    args.push("-Dcom.ibm.ws.cdi.javassist.use.superclass=true");
+    if (server.type == 'rops') {
+        args.push("-Dpce.applicationName=txm-server-rops");
+        args.push("-Dcom.myproclassic.jmsprovider=ROPS");
+        args.push("-Dpce.log4j.rootPath=./logs/rops");
+        args.push("-DServerTopology=FI.ROPS");
+    } else if (server.type == 'kko') {
+        args.push("-Dpce.applicationName=txm-server-vorrechner");
+        args.push("-Dpce.log4j.rootPath=./logs/kko");
+        args.push("-DServerTopology=FI.PCE");
+    } else {
+        args.push("-Dpce.applicationName=txm-server");
+        args.push("-Dpce.log4j.rootPath=./logs");
+        args.push("-DServerTopology=FI.PCE");
+    }
+    args.push("-Djboss.server.base.dir="+server.path);
+    // DynS path:
+    let dynsPath = global.settings.value("config.DynsPropertiesPath");
+    if (!dynsPath) {
+        console.log("WARN DynS Properties Path not set, please set using 'tm c s DynsPropertiesPath <path>'");
+    } else {
+        args.push("-DDynsPropertiesPath="+dynsPath);
+    }
+    // Program Arguments:
+    args.push("org.jboss.modules.Main");
+    args.push("-mp");
+    args.push(serverBaseDir+"/modules");
+    args.push("org.jboss.as.standalone");
+    args.push("-b");
+    args.push("localhost");
+    args.push("--server-config=standalone-full.xml");
+    var win = process.platform === "win32";
+    await util.spawnDetached(win ? "java.exe" : "java", args, server.path + "/../bin");
 }
 
 async function waitForServerReady(server) {

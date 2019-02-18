@@ -38,7 +38,8 @@ module.exports.spawnDetached = async function(cmd, args, cwd) {
         cwd: cwd,
         silent: true,
         detached: true,
-        stdio: [null, null, null]});
+        stdio: ['inherit', 'inherit', 'inherit']
+    });
 }
 
 /**
