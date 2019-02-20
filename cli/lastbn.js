@@ -76,7 +76,8 @@ async function lastbn(version, args) {
 	{
 		console.log(result.text);
 		
-		clipboardy.writeSync(">"+result.text);
+		try { clipboardy.writeSync(">"+result.text); }
+		catch (e) { console.log("Could not copy BN to clipboard: " + e); }
 		
 		return download(result, authToken, args);
 	}
