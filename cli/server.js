@@ -14,8 +14,8 @@ function usage() {
     console.log("                                    prefix to multiple server names to target");
     console.log("                                    multiple servers or a specific index no.");
     console.log("       del <name>                   delete a server.");
-    console.log("       stop [<name/prefix>]         stops all running servers or the specified ones");
-    console.log("       start [<name/prefix>]        starts the default servers or the specified ones");
+    console.log("       stop [<name prefix/no.>]     stops all running servers or the specified ones");
+    console.log("       start [<name prefix/no.>]    starts the default servers or the specified ones");
 
     process.exit();
 }
@@ -105,14 +105,20 @@ function del(name) {
     list();
 }
 
+function indexToNameIfIndex(nameOrIndex) {
+    let index;
+    try { index = parseInt(nameOrIndex); } catch (e) {};
+    // setting by index ?
+    if (index) {
+        nameOrIndex = Object.keys(global.settings.value("servers"))[index-1];
+        if (!nameOrIndex) console.log("Sorry, there is no server with index no. " + index);
+    }
+    return nameOrIndex;
+}
+
 function def(name) {
     if (!name) usage();
-    let index;
-    try { index = parseInt(name); } catch (e) {};
-    if (index) {
-        // setting by index:
-        name = Object.keys(global.settings.value("servers"))[index-1];
-    }
+    name = indexToNameIfIndex(name);
     global.settings.setValue("defaults.server", name);
     list();
 }
@@ -120,6 +126,10 @@ function def(name) {
 async function stop(name) {
     let servers = global.settings.value("servers");
     if (!servers) return;
+    if (name) {
+        name = indexToNameIfIndex(name);
+        if (!name) return;
+    }
     for (let server of Object.values(servers)) {
         if (!name || server.name.startsWith(name)) {
             if (await util.isPortOpen(server.port)) {
@@ -141,6 +151,10 @@ async function stop(name) {
 async function start(name) {
     let servers = global.settings.value("servers");
     if (!servers) return;
+    if (name) {
+        name = indexToNameIfIndex(name);
+        if (!name) return;
+    }
     let d = name || global.settings.value("defaults.server");
 
     // start servers:
