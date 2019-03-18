@@ -227,6 +227,7 @@ async function startJBoss(server) {
         args.push("-Dpce.log4j.rootPath=./logs");
         args.push("-DServerTopology=FI.PCE");
     }
+    args.push("-Dtxm.base.dir=.");
     args.push("-Djboss.server.base.dir="+server.path);
     // DynS path:
     let dynsPath = global.settings.value("config.DynsPropertiesPath");
