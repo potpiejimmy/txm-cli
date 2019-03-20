@@ -60,8 +60,11 @@ async function execute(name) {
         console.log("Unknown function chain: " + name);
         return;
     }
-    for (let f of def.definition.split(":")) {
-        console.log("---- Function chain: Executing " + f + " ----");
+    let cmds = def.definition.split(":");
+    console.log("Executing function chain " + cmds);
+    for (let i=0; i<cmds.length; i++) {
+        let f= cmds[i];
+        console.log("---- Executing "+(i+1)+"/"+cmds.length+": " + f + " ----");
         let args = f.split(" ");
         await global.callCli(args[0],args.slice(1));
     }

@@ -189,10 +189,12 @@ async function start(name, option) {
         if (server.name.startsWith(d)) {
             if (server.type === 'txm') {
                 console.log("Waiting for server '" + server.name + " to be ready.");
-                await waitForServerReady(server, option=='-o');
+                await waitForServerReady(server);
             }
         }
     }
+
+    if (option == '-o') await login(name);
 }
 
 async function login(name) {
@@ -206,8 +208,10 @@ async function login(name) {
 
     // open servers' login page(s):
     for (let server of Object.values(servers)) {
-        if (server.name.startsWith(d) && server.type === 'txm') {
-            await opnLogin(server);
+        if (server.name.startsWith(d)) {
+            if (server.type === 'txm' || server.type == 'kko') {
+                await opnLogin(server);
+            }
         }
     }
 }
@@ -274,7 +278,7 @@ async function startJBoss(server) {
     await util.spawnDetached(win ? "java.exe" : "java", args, server.path + "/../bin");
 }
 
-async function waitForServerReady(server, openLogin) {
+async function waitForServerReady(server) {
     let serverReady = false;
     do {
         try {
@@ -292,7 +296,6 @@ async function waitForServerReady(server, openLogin) {
         if (!serverReady) await util.asyncPause(1000);
     } while (!serverReady);
     console.log("Server " + server.name + " is ready.");
-    if (openLogin) await opnLogin(server);
 }
 
 async function opnLogin(server) {
