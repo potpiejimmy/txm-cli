@@ -105,16 +105,16 @@ async function askServer(url, version, authToken) {
 			const regex = /.*-Build\.(\d*)-Dev\..*?(\d*)\+.*/;
 
 			let matchA = regex.exec(a.resourceURI);
-			let buildNoA = matchA[1];
-			let masterNoA = matchA[2];
+			let buildNoA = parseInt(matchA[1]);
+			let masterNoA = parseInt(matchA[2]);
 
 			let matchB = regex.exec(b.resourceURI);
-			let buildNoB = matchB[1];
-			let masterNoB = matchB[2];
+			let buildNoB = parseInt(matchB[1]);
+			let masterNoB = parseInt(matchB[2]);
 
 			//sort result array with latest first (highest number at index 0)
 			let compare = buildNoB - buildNoA;
-			return compare ? compare : masterNoB-masterNoA;
+			return compare ? compare : masterNoB - masterNoA;
 		});
 				
 		return result[0];
