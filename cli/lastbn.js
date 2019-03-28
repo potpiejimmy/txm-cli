@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 const fetch = require("node-fetch");
 const clipboardy = require("clipboardy");
 const fs = require('fs');
@@ -10,12 +9,6 @@ async function invoke(args) {
     // last, if no sandbox present, use the default version
     let version = args[0] || util.determineSandboxVersion() || '19.0.10';
     return lastbn(version, args);
-}
-
-function parseNo(str,begin,end) {
-	str = str.substring(str.indexOf(begin)+begin.length);
-	str = str.substring(0,str.indexOf(end))
-	return str;
 }
 
 async function downloadFile(url, name, size, authToken) {
@@ -101,29 +94,32 @@ async function getAuthToken(key) {
 }
 
 async function askServer(url, version, authToken) {
-	let result0;
-	await fetch(url, {
+	return fetch(url, {
 		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
 	})
 	.then(result => result.json())
 	.then(result => {
-		result = result.data.filter(i => i.resourceURI.includes(version+"-Build.")).filter(i => i.resourceURI.includes("Dev.master"));
+		result = result.data.filter(i => i.resourceURI.includes(version+"-Build.")).filter(i => i.resourceURI.includes("Dev."));
 		
 		result = result.sort((a,b) => {
-			let buildNoA = parseInt(parseNo(a.resourceURI,'Build.','-'));
-			let buildNoB = parseInt(parseNo(b.resourceURI,'Build.','-'));
-			let masterNoA = parseInt(parseNo(a.resourceURI,'master.','+'));
-			let masterNoB = parseInt(parseNo(b.resourceURI,'master.','+'));
+			const regex = /.*-Build\.(\d*)-Dev\..*?(\d*)\+.*/;
+
+			let matchA = regex.exec(a.resourceURI);
+			let buildNoA = matchA[1];
+			let masterNoA = matchA[2];
+
+			let matchB = regex.exec(b.resourceURI);
+			let buildNoB = matchB[1];
+			let masterNoB = matchB[2];
 
 			//sort result array with latest first (highest number at index 0)
 			let compare = buildNoB - buildNoA;
-			return compare != 0 ? compare : masterNoB-masterNoA;
+			return compare ? compare : masterNoB-masterNoA;
 		});
 				
-		result0 = result[0];
-		
-	}).catch((err) => console.log("Can not read build version for " + version + " " + err));
-	return result0;
+		return result[0];
+	})
+	.catch((err) => console.log("Can not read build version for " + version + " " + err));
 }
 
 module.exports.invoke = invoke;
