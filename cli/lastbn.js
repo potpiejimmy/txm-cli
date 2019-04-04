@@ -99,7 +99,11 @@ async function askServer(url, version, authToken) {
 	})
 	.then(result => result.json())
 	.then(result => {
-		result = result.data.filter(i => i.resourceURI.includes(version+"-Build.")).filter(i => i.resourceURI.includes("Dev."));
+		result = result.data.filter(i => 
+			i.resourceURI.includes(version+"-Build.") && (
+				i.resourceURI.includes("Dev.master") ||
+				i.resourceURI.includes("Dev.release")
+			));
 		
 		result = result.sort((a,b) => {
 			const regex = /.*-Build\.(\d*)-Dev\..*?(\d*)\+.*/;
