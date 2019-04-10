@@ -18,7 +18,7 @@ function usage() {
     console.log("       build          do a gradlew build without recreating runtime folder.");
     console.log("       rebuild        do a clean build with new runtime folder.");
     console.log("       db             manage your databases.");
-    console.log("       cpgen [1/2]    perform CPGEN import of cpg file set 1 or 2 (default 1).");
+    console.log("       cpgen          perform CPGEN imports of cpg files.");
     console.log("       all            do everything, clean rebuild, createDB and deploy.");
     console.log("       func           manage custom function chains.");
     console.log("       sim            configure and run the PBM simulator GUI.");

@@ -1,16 +1,23 @@
 const util = require('../utils/util');
 const fs = require('fs');
+const path = require('path');
 
 function usage() {
-    console.log("Usage:  tm cpgen [<cpgset>]");
+    console.log("Usage:  tm cpgen 1|2|<file1> [<file2> [<file3> ...]]");
     console.log();
-    console.log("<cpgset> can be either '1' for HG0 import or '2' for HG1 import. Default is '1'.");
+    console.log("  Argument can be either '1' for default HG0 import or '2' for HG1 import,");
+    console.log("  or you can specify any number of absolute file paths to be imported.");
+    console.log();
+    console.log("  Timestamp postfixes in filenames are automatically stripped. For instance, the");
+    console.log("  command 'tm cpg C:\\tmp\\R1495.cpg_20181219_231349' will import the file 'R1495.cpg'.");
 
     process.exit();
 }
 
 async function invoke(args) {
     
+    if (!args[0]) usage();
+
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
 
     configurePort(sbox);
@@ -18,11 +25,13 @@ async function invoke(args) {
 
     await util.asyncPause(12000); // wait 12 sec.
 
-    if (!args[0] || args[0] === '1') {
+    if (args[0] === '1') {
         copyCpgFile("/fi-servicestation-client/etc/import", "R1400.cpg");
         copyCpgFile("/fi-servicestation-client/cpgenfiles/testfiles_daten.neu/kko", "R3768_links.cpg");
     } else if (args[0] === '2') {
         copyCpgFile("/fi-servicestation-client/cpgenfiles/testfiles_daten.neu/kko", "R3769_rechts.cpg");
+    } else {
+        for (f of args) copyCpgFileAbsolute(f);
     }
 
     await waitImportDirEmpty(sbox);
@@ -57,10 +66,26 @@ async function waitImportDirEmpty(sbox) {
 function copyCpgFile(srcdir, cpgfile) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     srcdir = sbox.path + srcdir;
+    copyCpgFileImpl(sbox, srcdir + "/" + cpgfile, cpgfile);
+}
+
+function copyCpgFileAbsolute(cpgfilepath) {
+    let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
+    let targetname = path.basename(cpgfilepath);
+    if (targetname.indexOf(".cpg")>0) targetname = targetname.substr(0, targetname.indexOf(".cpg")+4);
+    if (targetname.indexOf(".tab")>0) targetname = targetname.substr(0, targetname.indexOf(".tab")+4);
+    copyCpgFileImpl(sbox, cpgfilepath, targetname);
+}
+
+function copyCpgFileImpl(sbox, srcfile, targetname) {
     let targetdir = sbox.path+"/runtime/fi-servicestation-client/import";
-    console.log("Copying " + srcdir + "/" + cpgfile + " to " + targetdir);
-    fs.copyFileSync(srcdir + "/" + cpgfile,
-                    targetdir + "/" + cpgfile);
+    console.log("Copying " + srcfile + " to " + targetdir + "/" + targetname);
+    try {
+        fs.copyFileSync(srcfile,
+                        targetdir + "/" + targetname);
+    } catch (e) {
+        console.error("Copy failed: " + e);
+    }
 }
 
 module.exports.invoke = invoke;
