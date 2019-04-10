@@ -26,7 +26,7 @@ The command line tool offers various subcommands that can be displayed by just e
        build          do a gradlew build without recreating runtime folder.
        rebuild        do a clean build with new runtime folder.
        db             manage your databases.
-       cpgen [1/2]    perform CPGEN import of cpg file set 1 or 2 (default 1).
+       cpgen          perform CPGEN imports of cpg files.
        all            do everything, clean rebuild, createDB and deploy.
        func           manage custom function chains.
        sim            configure and run the PBM simulator GUI.
