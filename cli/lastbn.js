@@ -7,7 +7,7 @@ async function invoke(args) {
     // first, use the release specified as argument
     // second, if no argument, determine the release version from the current sandbox's version.txt
     // last, if no sandbox present, use the default version
-    let version = args[0] || util.determineSandboxVersion() || '19.0.10';
+    let version = args[0] || util.determineSandboxVersion() || '19.1.00';
     return lastbn(version, args);
 }
 
@@ -31,18 +31,16 @@ async function downloadFile(url, name, size, authToken) {
 	}));
 }
 
-async function download(result, authToken, args) {
-	if (args[1] === 'd' ) {
-		return fetch(result.resourceURI, {
-			headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
-		})
-		.then(result => result.json())
-		.then(result => {
-			result = result.data.filter(i => i.resourceURI.endsWith(".zip"));
-			return downloadFile(result[0].resourceURI, result[0].text, result[0].sizeOnDisk, authToken);
-		})
-		.catch((err) => console.log("Can not read download link for " + version + " " + err));
-	}
+async function download(result, authToken) {
+	return fetch(result.resourceURI, {
+		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
+	})
+	.then(result => result.json())
+	.then(result => {
+		result = result.data.filter(i => i.resourceURI.endsWith(".zip"));
+		return downloadFile(result[0].resourceURI, result[0].text, result[0].sizeOnDisk, authToken);
+	})
+	.catch((err) => console.log("Can not read download link for " + version + " " + err));
 }
 
 function toBase64(input) {
@@ -69,10 +67,14 @@ async function lastbn(version, args) {
 	{
 		console.log(result.text);
 		
-		try { clipboardy.writeSync(">"+result.text); }
-		catch (e) { console.log("Could not copy BN to clipboard: " + e); }
-		
-		return download(result, authToken, args);
+		if (args[1] === 'd' ) {
+			// download artifact
+			return download(result, authToken);
+		} else {
+			// or copy to clipboard
+			try { clipboardy.writeSync(">"+result.text); }
+			catch (e) { console.log("Could not copy BN to clipboard: " + e); }
+		}
 	}
 	else {
 		console.log("No build found for this release version!");
