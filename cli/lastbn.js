@@ -53,15 +53,6 @@ async function lastbn(version, args) {
     if (!authToken) return;
 	let url = "https://nexusde.dieboldnixdorf.com/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
 	let result = await askServer(url, version, authToken);
-	//new server has no result, try again against old server
-	if(!result)
-	{
-		console.log("No build found for this release on new nexus server, try old one.");
-		authToken = await getAuthToken('auth-davis');
-        if (!authToken) return;
-        url = "https://davis.wincor-nixdorf.com/nexus/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
-		result = await askServer(url, version, authToken);
-	}
 	
 	if(result)
 	{
@@ -99,7 +90,10 @@ async function askServer(url, version, authToken) {
 	return fetch(url, {
 		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
 	})
-	.then(result => result.json())
+	.then(result => {
+		if (result.status != 200) throw "HTTP " + result.status + " " + result.statusText;
+		return result.json()
+	})
 	.then(result => {
 		result = result.data.filter(i => 
 			i.resourceURI.includes(version+"-Build.") && (
@@ -125,7 +119,7 @@ async function askServer(url, version, authToken) {
 				
 		return result[0];
 	})
-	.catch((err) => console.log("Can not read build version for " + version + " " + err));
+	.catch((err) => console.log("Can not read build version for " + version + ": " + err));
 }
 
 module.exports.invoke = invoke;
