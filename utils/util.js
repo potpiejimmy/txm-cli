@@ -85,3 +85,7 @@ module.exports.getNPMConfigValue = async function(key) {
         childProcess.once('error', err =>reject(err));
     });
 }
+
+module.exports.pressEnter = async function() {
+    return new Promise(resolve => process.stdin.once('data', () => resolve()));
+}

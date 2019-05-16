@@ -71,3 +71,4 @@ async function executeSQL(script) {
 }
 
 module.exports.invoke = invoke;
+module.exports.getDBConnectionString = getDBConnectionString;

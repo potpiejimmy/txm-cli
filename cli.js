@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","lastbn","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -28,6 +28,7 @@ function usage() {
     console.log("                      with <r> being the desired version (e.g. '19.0.00'),");
     console.log("                      if <r> is omitted, the current sandbox version is used,");
     console.log("                      specify option 'd' to download the artifact from Nexus.");
+    console.log("       autotest       run the automated test suite (Automatiktest).");
     console.log("       dump           dump all current settings as JSON.");
     console.log();
     console.log("All commands can be abbreviated, for instance 'l' for 'lastbn'.");

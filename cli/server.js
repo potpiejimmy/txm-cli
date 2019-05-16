@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const fetch = require('node-fetch');
-const opn = require('opn');
+const open = require('opn');
 const util = require('../utils/util');
 
 function usage() {
@@ -210,7 +210,7 @@ async function login(name) {
     for (let server of Object.values(servers)) {
         if (server.name.startsWith(d)) {
             if (server.type === 'txm' || server.type == 'kko') {
-                await opnLogin(server);
+                await openLogin(server);
             }
         }
     }
@@ -298,10 +298,10 @@ async function waitForServerReady(server) {
     console.log("Server " + server.name + " is ready.");
 }
 
-async function opnLogin(server) {
+async function openLogin(server) {
     let url = "http://localhost:"+server.port+"/webadm";
     console.log("Opening " + url);
-    await opn(url);
+    await open(url);
 }
 
 module.exports.invoke = invoke;
