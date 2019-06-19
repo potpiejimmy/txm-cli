@@ -1,8 +1,5 @@
 const fs = require('fs');
-const del = require('del');
-const ncp = require('ncp');
 var JSZip = require("jszip");
-var AdmZip = require('adm-zip');
 const util = require('../utils/util');
 
 async function invoke(args) {
@@ -22,77 +19,69 @@ async function invoke(args) {
     };
 }
 
-async function deployServer(sbox, server) {
-    let sandboxVersion = util.determineSandboxVersion(sbox);
+function getDeploymentPath(server) {
     let earname = "txm-server.ear";
-    let earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/txm-server.ear";
     if (server.type == 'rops') {
         earname = "txm-server-rops.ear";
-        earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-rops/txm-server-rops.ear";
     } else if (server.type == 'kko') {
         earname = "txm-server-vorrechner.ear";
-        earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-vorrechner/txm-server-vorrechner.ear";
     }
-    console.log("EAR file: " + earorigin);
     let path = server.path;
     if (fs.existsSync(path+"/deployments")) path += "/deployments/";
     else path += "/dropins/";
     path += earname;
+    return path;
+}
+
+function getEarOrigin(sbox, server) {
+    let sandboxVersion = util.determineSandboxVersion(sbox);
+    let earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/txm-server.ear";
+    if (server.type == 'rops') {
+        earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-rops/txm-server-rops.ear";
+    } else if (server.type == 'kko') {
+        earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-vorrechner/txm-server-vorrechner.ear";
+    }
+    console.log("EAR file: " + earorigin);
+    return earorigin;
+}
+
+async function deployServer(sbox, server) {
+    let sandboxVersion = util.determineSandboxVersion(sbox);
+    let path = getDeploymentPath(server);
+    let earorigin = getEarOrigin(sbox, server);
     console.log("Deleting " + path);
-    deltree(path);
+    util.deltree(path);
     console.log("Extracting " + path);
     await extractEarFromDist(sbox.path + "/fi-asm-assembly/build/distributions/fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT.zip", earorigin, path);
 
     let basepath = path;
     if (server.type != 'rops') {
         // for txm and kko servers, explode the ear, war and FI fragment:
-        unjar(path);
+        util.unjar(path);
         path += "/ocm.war";
-        unjar(path);
+        util.unjar(path);
         path += "/WEB-INF/lib/fi-ocm-wf.jar";
-        unjar(path);
+        util.unjar(path);
     }
 
     if (server.serverType === 'jboss' && server.type === 'txm') {
         console.log("> Fixing deployment for JBoss");
         path = basepath + "/lib/DynsFramework.jar";
-        unjar(path);
+        util.unjar(path);
         path = basepath + "/fi-eisco-dyns-ejb.jar";
-        unjar(path);
+        util.unjar(path);
         path += "/de";
-        await copytree(path, basepath + "/lib/DynsFramework.jar/de");
-        deltree(path);
+        await util.copytree(path, basepath + "/lib/DynsFramework.jar/de");
+        util.deltree(path);
         path = basepath + "/GenericRA.rar";
-        unjar(path);
-        await copytree(path, basepath + "/lib");
-        deltree(path+"/*.jar");
-        try {deltree(basepath+"/lib/META-INF");} catch (e) {}
+        util.unjar(path);
+        await util.copytree(path, basepath + "/lib");
+        util.deltree(path+"/*.jar");
+        try {util.deltree(basepath+"/lib/META-INF");} catch (e) {}
         console.log("> Done fixing deployment for JBoss");
     }
 
     console.log("Successfully deployed " + server.type + " application.");
-}
-
-function unjar(path) {
-    console.log("Exploding " + path);
-    let tmpfile = path + ".extracting";
-    fs.renameSync(path,tmpfile);
-    var ear = new AdmZip(tmpfile);
-    ear.extractAllTo(path, /*overwrite*/true);
-    deltree(tmpfile);
-}
-
-function deltree(path) {
-    del.sync([path], {force: true});
-}
-
-async function copytree(source, dest) {
-    return new Promise((resolve,reject) => {
-        ncp.ncp(source, dest, err => {
-            if (err) return reject(err);
-            resolve();
-        })
-    });
 }
 
 async function extractEarFromDist(zipfile, earfile, outfile) {
@@ -105,3 +94,4 @@ async function extractEarFromDist(zipfile, earfile, outfile) {
 }
 
 module.exports.invoke = invoke;
+module.exports.getDeploymentPath = getDeploymentPath;

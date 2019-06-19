@@ -1,6 +1,9 @@
 const {exec,spawn,spawnSync} = require('child_process');
 const portscanner = require('portscanner');
 const fs = require('fs');
+const del = require('del');
+const ncp = require('ncp');
+var AdmZip = require('adm-zip');
 
 /**
  * Executes a command with promise
@@ -88,4 +91,26 @@ module.exports.getNPMConfigValue = async function(key) {
 
 module.exports.pressEnter = async function() {
     return new Promise(resolve => process.stdin.once('data', () => resolve()));
+}
+
+module.exports.unjar = function(path) {
+    console.log("Exploding " + path);
+    let tmpfile = path + ".extracting";
+    fs.renameSync(path,tmpfile);
+    var ear = new AdmZip(tmpfile);
+    ear.extractAllTo(path, /*overwrite*/true);
+    module.exports.deltree(tmpfile);
+}
+
+module.exports.deltree = function(path) {
+    del.sync([path], {force: true});
+}
+
+module.exports.copytree = async function(source, dest) {
+    return new Promise((resolve,reject) => {
+        ncp.ncp(source, dest, err => {
+            if (err) return reject(err);
+            resolve();
+        })
+    });
 }
