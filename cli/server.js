@@ -330,3 +330,4 @@ async function openLogin(server) {
 }
 
 module.exports.invoke = invoke;
+module.exports.indexToNameIfIndex = indexToNameIfIndex;

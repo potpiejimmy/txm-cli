@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -17,6 +17,7 @@ function usage() {
     console.log("                      to the current default server(s).");
     console.log("       build          do a gradlew build without recreating runtime folder.");
     console.log("       rebuild        do a clean build with new runtime folder.");
+    console.log("       hotfix         apply hotfix from IDE to deployed server(s).");
     console.log("       db             manage your databases.");
     console.log("       cpgen          perform CPGEN imports of cpg files.");
     console.log("       all            do everything, clean rebuild, createDB and deploy.");
