@@ -16,7 +16,7 @@ function usage() {
     console.log("                                     multiple servers or a specific index no.");
     console.log("       del <name>                    delete a server.");
     console.log("       stop [<name pref./no.>]       stops all running servers or the specified ones.");
-    console.log("       start [<name pref./no.>] [-o] starts the default servers or the specified ones,");
+    console.log("       start [<name pref./no.>] [-o] (re)starts the default servers or the specified ones,");
     console.log("                                     add option '-o' to open login URL after startup.");
     console.log("       login [<name pref./no.>]      opens the default or specified servers' login page(s).");
 
@@ -48,14 +48,14 @@ function list() {
         return;
     }
     let d = global.settings.value("defaults.server");
-    let index = 1;
     for (let server of Object.values(servers)) {
+        let index = nameToIndex(server.name);
         console.log((server.name.startsWith(d) ? "* " : "  ") +
-                     "[" + index++ + "]\t" +
+                     "[" + index + "]\t" +
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
                      server.path + " " +
-                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort : "") + ")");
+                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")");
     }
     console.log();
     console.log("* = current default server(s) / deploy target(s)");
@@ -120,6 +120,19 @@ function indexToNameIfIndex(nameOrIndex) {
     return nameOrIndex;
 }
 
+function nameToIndex(name) {
+    let keys = Object.keys(global.settings.value("servers"));
+    for (let i=0; i<keys.length; i++) {
+        if (keys[i] == name) return i+1;
+    }
+    return 0; // not found
+}
+
+function debugPortForServer(name) {
+    const BASE_DEBUG_PORT = 7777;
+    return BASE_DEBUG_PORT + nameToIndex(name) - 1;
+}
+
 function def(name) {
     if (!name) usage();
     name = indexToNameIfIndex(name);
@@ -165,6 +178,17 @@ async function start(name, option) {
         if (!name) return;
     }
     let d = name || global.settings.value("defaults.server");
+
+    // stop the targeted ones that are running (restart):
+    for (let server of Object.values(servers)) {
+        if (server.name.startsWith(d)) {
+            if (await util.isPortOpen(server.port)) {
+                await stop(server.name);
+                console.log("Note: '"+server.name+"' will be restarted in 5s.");
+                await util.asyncPause(5000); // wait some time for JBoss process to really terminate
+            }
+        }
+    }
 
     // start servers:
     for (let server of Object.values(servers)) {
@@ -238,6 +262,7 @@ async function startJBoss(server) {
     args.push("-Djboss.home.dir="+serverBaseDir);
     args.push("-Dorg.jboss.logmanager.nocolor=true");
     args.push("-Djboss.bind.address.management=localhost");
+    args.push("-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + debugPortForServer(server.name));
 
     // Server options:
     args.push("-DUMG_ENV_TYPE=nicht-prod");
