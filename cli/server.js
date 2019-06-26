@@ -147,6 +147,7 @@ async function stop(name) {
         name = indexToNameIfIndex(name);
         if (!name) return;
     }
+    let stoppedAJboss = false;
     for (let server of Object.values(servers)) {
         if (!name || server.name.startsWith(name)) {
             if (await util.isPortOpen(server.port)) {
@@ -154,6 +155,7 @@ async function stop(name) {
                 console.log("Stopping server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
                 var win = process.platform === "win32";
                 if (server.serverType == "jboss") {
+                    stoppedAJboss = true;
                     await util.spawn(win ? "jboss-cli.bat" : "./jboss-cli.sh", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin", "\n");
                 } else if (server.serverType == "wlp") {
                     await util.spawn(win ? "server.bat" : "./server", ["stop", nativeServerName], server.path + "/../../../bin");
@@ -162,6 +164,10 @@ async function stop(name) {
                 console.log("Server '" + server.name + "' is not running.");
             }
         }
+    }
+    if (stoppedAJboss) {
+        console.log("Waiting for JBoss processes to exit.");
+        await util.asyncPause(5000);
     }
 }
 
@@ -182,11 +188,7 @@ async function start(name, option) {
     // stop the targeted ones that are running (restart):
     for (let server of Object.values(servers)) {
         if (server.name.startsWith(d)) {
-            if (await util.isPortOpen(server.port)) {
-                await stop(server.name);
-                console.log("Note: '"+server.name+"' will be restarted in 5s.");
-                await util.asyncPause(5000); // wait some time for JBoss process to really terminate
-            }
+            if (await util.isPortOpen(server.port)) await stop(server.name);
         }
     }
 
