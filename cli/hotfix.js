@@ -37,8 +37,10 @@ async function invoke(args) {
                 // patch project:
                 deploymentmodule = deploymentmodule.substr('fi-asm-'.length, deploymentmodule.length - 'fi-asm--patch'.length);
             }
-            let isWar = deploymentmodule.endsWith("webapp");
+            let isWar = deploymentmodule.endsWith("-webapp");
+            let isWf = deploymentmodule.endsWith("-wf");
             let modulepath = deploy.getDeploymentPath(server) + '/' + deploymentmodule + (isWar ? '.war' : '.jar');
+            if (isWf) modulepath = deploy.getDeploymentPath(server) + '/ocm.war/WEB-INF/lib/' + deploymentmodule + '.jar';
             if (fs.existsSync(modulepath)) {
                 if (fs.lstatSync(modulepath).isFile()) {
                     util.unjar(modulepath); // unjar if it exists as a file
