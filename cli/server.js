@@ -270,19 +270,17 @@ async function startJBoss(server) {
     args.push("-DUMG_ENV_TYPE=nicht-prod");
     args.push("-Dcom.ibm.ws.cdi.immediate.ejb.start=true");
     args.push("-Dcom.ibm.ws.cdi.javassist.use.superclass=true");
+    args.push("-DServerTopology=FI.PCE");
     if (server.type == 'rops') {
         args.push("-Dpce.applicationName=txm-server-rops");
         args.push("-Dcom.myproclassic.jmsprovider=ROPS");
         args.push("-Dpce.log4j.rootPath=./logs/rops");
-        args.push("-DServerTopology=FI.ROPS");
     } else if (server.type == 'kko') {
         args.push("-Dpce.applicationName=txm-server-vorrechner");
         args.push("-Dpce.log4j.rootPath=./logs/kko");
-        args.push("-DServerTopology=FI.PCE");
     } else {
         args.push("-Dpce.applicationName=txm-server");
         args.push("-Dpce.log4j.rootPath=./logs");
-        args.push("-DServerTopology=FI.PCE");
     }
     args.push("-Dtxm.base.dir=.");
     args.push("-Djboss.server.base.dir="+server.path);
