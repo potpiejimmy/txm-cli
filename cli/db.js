@@ -8,9 +8,9 @@ function usage() {
     console.log("with <cmd> being one of");
     console.log();
     console.log("       init                initializes Oracle DBMS with FI tablespaces and grants.");
-    console.log("       adduser <user> <pw> create a new DB schema for the given user and password.");
+    console.log("       adduser <user> <pw> (re)creates a new Oracle user with the given user name and password.");
     console.log("       set <user> <pw>     sets the current default DB user and password.");
-    console.log("       create              (re)creates the database schema (runs createDb.sh).");
+    console.log("       create              (re)creates the FI database DDLs & DMLs (runs createDb.sh).");
     console.log("       norops              disables ROPS (executes disable-rops.sql).");
     console.log("       devinit             initializes dev system (executes devsystem_init.sql).");
     console.log();
@@ -104,7 +104,30 @@ grant execute on dbms_system to public;
 async function createSchema(user, pw) {
     if (!user || !pw) usage();
 
-    let sql = `CREATE USER $user PROFILE DEFAULT IDENTIFIED BY $password DEFAULT TABLESPACE PCE_TX TEMPORARY TABLESPACE TEMP ACCOUNT UNLOCK;
+    let sql = `
+DECLARE
+	user_count NUMBER;
+BEGIN
+-- schaue nach, ob es schon user mit dieser kennung gibt! wenn ja -> droppen!
+SELECT COUNT (1) INTO user_count FROM dba_users WHERE username = UPPER ('$user');
+	IF (user_count > 0) THEN
+	-- es gibt schon mehr als einen user mit dieser kennung. force logout -> user darf nicht eingeloggt sein, wenn das schema gedroppt wird!!
+		BEGIN
+		-- suche connections zu dem schema
+		   FOR ln_cur IN (SELECT sid, serial# FROM v$session WHERE username = UPPER ('$user'))
+		   LOOP
+		   -- wenn user eingeloggt sind, session killen!
+			  EXECUTE IMMEDIATE ('ALTER SYSTEM KILL SESSION ''' || ln_cur.sid || ',' || ln_cur.serial# || ''' IMMEDIATE');
+		   END LOOP;
+		END;
+		-- drop user
+		EXECUTE IMMEDIATE('DROP USER $user CASCADE');
+	END IF;
+END;
+/
+commit;
+
+CREATE USER $user PROFILE DEFAULT IDENTIFIED BY $password DEFAULT TABLESPACE PCE_TX TEMPORARY TABLESPACE TEMP ACCOUNT UNLOCK;
 GRANT CREATE TABLE TO $user;
 GRANT CREATE VIEW TO $user;
 GRANT CREATE SYNONYM TO $user;
@@ -112,6 +135,7 @@ GRANT UNLIMITED TABLESPACE TO $user;
 GRANT CONNECT TO $user;
 GRANT RESOURCE TO $user;
 grant execute on dbms_system to $user;
+commit;
 quit;
 `
     sql = sql.replace(/\$user/g, user).replace(/\$password/g, pw);
