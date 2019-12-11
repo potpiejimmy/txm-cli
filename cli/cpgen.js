@@ -21,10 +21,14 @@ async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
 
     configurePort(sbox);
+
+    // copy a file to wait for it to be removed by servicestation startup
+    copyCpgFile("/fi-servicestation-client/etc/import", "R1400.cpg");
+
     startStopServiceStation(sbox, false);
+    await waitImportDirEmpty(sbox); // wait for service station to be up and running
 
-    await util.asyncPause(12000); // wait 12 sec.
-
+    // now copy the files
     if (args[0] === '1') {
         copyCpgFile("/fi-servicestation-client/etc/import", "R1400.cpg");
         copyCpgFile("/fi-servicestation-client/cpgenfiles/testfiles_daten.neu/kko", "R3768_links.cpg");
@@ -34,6 +38,7 @@ async function invoke(args) {
         for (f of args) copyCpgFileAbsolute(f);
     }
 
+    // wait for import to be finished
     await waitImportDirEmpty(sbox);
     await startStopServiceStation(sbox, true);
 }
