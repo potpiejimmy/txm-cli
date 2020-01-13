@@ -37,5 +37,6 @@ The command line tool offers various subcommands that can be displayed by just e
                       if <r> is omitted, the current sandbox version is used,
                       specify option 'd' to download the artifact from Nexus.
        dump           dump all current settings as JSON.
+	   ctv            run commtraceviewer.
        
 All commands can be abbreviated as you like - the first matching command will be executed. For instance, "tm deploy" can be written as "tm d", "tm update" as "tm u" and "tm server list" can be abbreviated as "tm s l" and so on.

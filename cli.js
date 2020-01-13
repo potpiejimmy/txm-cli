@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump", "ctv"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -31,6 +31,7 @@ function usage() {
     console.log("                      specify option 'd' to download the artifact from Nexus.");
     console.log("       autotest       run the automated test suite (Automatiktest).");
     console.log("       dump           dump all current settings as JSON.");
+	console.log("       ctv            run commtraceviewer.");
     console.log();
     console.log("All commands can be abbreviated, for instance 'l' for 'lastbn'.");
     console.log();
