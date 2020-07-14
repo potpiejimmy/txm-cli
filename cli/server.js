@@ -94,8 +94,8 @@ function determineServerType(path) {
             managementPort: parseInt(managementPort[1])
         };
     } else if (fs.existsSync(path+"/dropins")) {
-        let serverCfg = fs.readFileSync(path+"/server.xml");
-        let port = /httpPort="(\d*)"/.exec(serverCfg);
+        let serverCfg = fs.readFileSync(path+"/bootstrap.properties");
+        let port = /PCEPAR_LISTEN_PORT_HTTP_MANAGED=(\d*)/.exec(serverCfg);
         return {
             serverType: "wlp",
             port: parseInt(port[1])
