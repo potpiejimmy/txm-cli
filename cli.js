@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const settings = require("settings-store")
+const db = require('./cli/db')
 
 const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump", "ctv"];
 
@@ -39,6 +40,7 @@ function usage() {
     if (defaults) {
         console.log("Default server(s):  " + global.settings.value("defaults.server"));
         console.log("Default sandbox:    " + global.settings.value("defaults.sandbox"));
+        console.log("Current DB User:    " + db.getDBConnectionString());
     }
     process.exit();
 }

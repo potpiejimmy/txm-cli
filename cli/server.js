@@ -9,16 +9,17 @@ function usage() {
     console.log();
     console.log("with <cmd> being one of");
     console.log();
-    console.log("       list                          list configured servers.");
-    console.log("       set <name> <path> [<type>]    set or update a server. type can be one of txm,rops,kko.");
-    console.log("       default <name prefix/no.>     sets the current default server(s). can be a");
-    console.log("                                     prefix to multiple server names to target");
-    console.log("                                     multiple servers or a specific index no.");
-    console.log("       del <name>                    delete a server.");
-    console.log("       stop [<name pref./no.>]       stops all running servers or the specified ones.");
-    console.log("       start [<name pref./no.>] [-o] (re)starts the default servers or the specified ones,");
-    console.log("                                     add option '-o' to open login URL after startup.");
-    console.log("       login [<name pref./no.>]      opens the default or specified servers' login page(s).");
+    console.log("       list                               list configured servers.");
+    console.log("       set <name> <path> [<type>]         set or update a server. type can be one of txm,rops,kko.");
+    console.log("       default <name prefix/no.>          sets the current default server(s). can be a");
+    console.log("                                          prefix to multiple server names to target");
+    console.log("                                          multiple servers or a specific index no.");
+    console.log("       del <name>                         delete a server.");
+    console.log("       stop [<name pref./no.>]            stops all running servers or the specified ones.");
+    console.log("       start [<name pref./no.>] [-o]      (re)starts the default servers or the specified ones,");
+    console.log("                                          add option '-o' to open login URL after startup.");
+    console.log("       login  [<name pref./no.>]          opens the default or specified servers' admin login page(s).");
+    console.log("       loginPrincipal [<name pref./no.>]  opens the default or specified servers' principal login page(s).");
 
     process.exit();
 }
@@ -28,20 +29,21 @@ async function invoke(args) {
     if (!args.length) usage();
 
     let cmd = args[0];
-    if ("list".startsWith(cmd)) list();
+    if ("list".startsWith(cmd)) await list();
     else if ("set".startsWith(cmd)) set(args[1], args[2], args[3]);
     else if ("default".startsWith(cmd)) def(args[1]);
     else if ("del".startsWith(cmd)) del(args[1]);
     else if ("stop".startsWith(cmd)) await stop(args[1]);
     else if ("start".startsWith(cmd)) await start(args[1], args[2]);
-    else if ("login".startsWith(cmd)) await login(args[1]);
+    else if ("login".startsWith(cmd)) await login(args[1], false);
+    else if ("loginPrincipal".startsWith(cmd)) await login(args[1], true);
     else {
         console.log("Unknown command: " + cmd);
         usage();
     }
 }
 
-function list() {
+async function list() {
     let servers = global.settings.value("servers");
     if (!servers) {
         console.log("No servers configured");
@@ -55,7 +57,8 @@ function list() {
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
                      server.path + " " +
-                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")");
+                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")\t" + 
+                     "[" + ((await util.isPortOpen(server.port)) ? 'STARTED' : 'STOPPED') + "]");
     }
     console.log();
     console.log("* = current default server(s) / deploy target(s)");
@@ -223,7 +226,7 @@ async function start(name, option) {
     if (option == '-o') await login(name);
 }
 
-async function login(name) {
+async function login(name, isPrincipal) {
     let servers = global.settings.value("servers");
     if (!servers) return;
     if (name) {
@@ -236,7 +239,10 @@ async function login(name) {
     for (let server of Object.values(servers)) {
         if (server.name.startsWith(d)) {
             if (server.type === 'txm' || server.type == 'kko') {
-                await openLogin(server);
+                if(!isPrincipal)
+                    await openLogin(server);
+                else
+                    await openPrincipalLogin(server);
             }
         }
     }
@@ -327,6 +333,12 @@ async function waitForServerReady(server) {
 
 async function openLogin(server) {
     let url = "http://localhost:"+server.port+"/webadm";
+    console.log("Opening " + url);
+    await open(url);
+}
+
+async function openPrincipalLogin(server) {
+    let url = "http://localhost:"+server.port+"/webadm/pages/Principal.xhtml?inr=421&vrz=IKS01";
     console.log("Opening " + url);
     await open(url);
 }
