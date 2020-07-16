@@ -50,16 +50,18 @@ async function list() {
         return;
     }
     let d = global.settings.value("defaults.server");
+    let output = "";
     for (let server of Object.values(servers)) {
         let index = nameToIndex(server.name);
-        console.log((server.name.startsWith(d) ? "* " : "  ") +
+        output += "\n" + (server.name.startsWith(d) ? "* " : "  ") +
                      "[" + index + "]\t" +
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
                      server.path + " " +
                      "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")\t" + 
-                     "[" + ((await util.isPortOpen(server.port)) ? 'STARTED' : 'STOPPED') + "]");
+                     "[" + ((await util.isPortOpen(server.port)) ? 'STARTED' : 'STOPPED') + "]";
     }
+    console.log(output);
     console.log();
     console.log("* = current default server(s) / deploy target(s)");
 }
