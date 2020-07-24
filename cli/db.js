@@ -7,12 +7,12 @@ function usage() {
     console.log();
     console.log("with <cmd> being one of");
     console.log();
-    console.log("       init                initializes Oracle DBMS with FI tablespaces and grants.");
-    console.log("       adduser <user> <pw> (re)creates a new Oracle user with the given user name and password.");
-    console.log("       set <user> <pw>     sets the current default DB user and password.");
-    console.log("       create              (re)creates the FI database DDLs & DMLs (runs createDb.sh).");
-    console.log("       norops              disables ROPS (executes disable-rops.sql).");
-    console.log("       devinit             initializes dev system (executes devsystem_init.sql).");
+    console.log("       init                     initializes Oracle DBMS with FI tablespaces and grants.");
+    console.log("       adduser <user> <pw>      (re)creates a new Oracle user with the given user name and password.");
+    console.log("       set <user> <pw> [<sid>]  sets the current default DB user, password and SID (optional)");
+    console.log("       create                   (re)creates the FI database DDLs & DMLs (runs createDb.sh).");
+    console.log("       norops                   disables ROPS (executes disable-rops.sql).");
+    console.log("       devinit                  initializes dev system (executes devsystem_init.sql).");
     console.log();
     showCurrentSettings();
     
@@ -25,7 +25,7 @@ async function invoke(args) {
     let cmd = args[0];
     if ("init".startsWith(cmd)) await initDBMS();
     else if ("adduser".startsWith(cmd)) await createSchema(args[1], args[2]);
-    else if ("set".startsWith(cmd)) await configureDB(args[1], args[2]);
+    else if ("set".startsWith(cmd)) await configureDB(args[1], args[2], args[3]);
     else if ("create".startsWith(cmd)) await createDB();
     else if ("norops".startsWith(cmd)) await executeSQL("disable-rops.sql");
     else if ("devinit".startsWith(cmd)) await executeSQL("devsystem_init.sql");
@@ -45,7 +45,38 @@ function showCurrentSettings() {
 
 function getDBConnectionString() {
     let dbprops = propreader(getGradlePropertiesFile());
-    return dbprops.get("dbUser") + "/" + dbprops.get("dbPW") + "@XE";
+    return dbprops.get("dbUser") + "/" + dbprops.get("dbPW") + "@"+getSID();
+}
+
+function getSID() {
+    let dbprops = propreader(getGradlePropertiesFile());
+    let dbName = dbprops.get("dbName");
+    let sid = "XE";
+    try {
+        sid = dbName.includes('.') ? dbName.split('.')[0] : dbName;
+    } catch(err) {
+        console.log("err reading SID. Using default: XE")
+        sid = "XE";
+    }
+
+    return sid.toUpperCase();
+}
+
+function convertSidToGradleDbName(sid) {
+    let dbprops = propreader(getGradlePropertiesFile());
+    let dbName = dbprops.get("dbName");
+    let newDbName = "xe.ad.diebold.com";
+    try {
+        if(dbName && dbName.includes('.'))
+            newDbName = sid + dbName.substring(dbName.indexOf('.'), dbName.length)
+        else
+            newDbName = sid;
+    } catch(err) {
+        console.log("err changing sid. setting default in gradle properties: xe.ad.diebold.com")
+        newDbName = "xe.ad.diebold.com"
+    }
+
+    return newDbName;
 }
 
 async function createDB() {
@@ -58,12 +89,18 @@ async function createDB() {
     await util.exec("createDb.sh", sbox.path+"/scripts");
 }
 
-async function configureDB(user, pw) {
+async function configureDB(user, pw, sid) {
     if (!user || !pw) usage();
+    let newDbName = sid ? convertSidToGradleDbName(sid.toLowerCase()) : null;
+    
     let cfgFile = getGradlePropertiesFile();
     let cfg = fs.readFileSync(cfgFile).toString();
     cfg = cfg.replace(/^dbUser=.*$/m, "dbUser=" + user);
     cfg = cfg.replace(/^dbPW=.*$/m, "dbPW=" + pw);
+
+    if(newDbName)
+        cfg = cfg.replace(/^dbName=.*$/m, "dbName=" + newDbName);
+
     fs.writeFileSync(cfgFile, cfg);
     showCurrentSettings();
 }
@@ -76,7 +113,7 @@ async function executeSQL(script) {
 
 async function exexuteAsDBA(sql) {
     var win = process.platform === "win32";
-    await util.spawn(win ? "sqlplus.exe" : "sqlplus", ["/@xe", "as", "sysdba"], null, sql);
+    await util.spawn(win ? "sqlplus.exe" : "sqlplus", ["/@"+getSID(), "as", "sysdba"], null, sql);
 }
 
 async function initDBMS() {
