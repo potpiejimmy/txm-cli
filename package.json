@@ -1,10 +1,11 @@
 {
   "name": "txm-cli",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "The ultimate CLI for Transaction Middleware (TM)",
   "main": "cli.js",
   "scripts": {
     "start": "node cli.js",
+    "push": "git push origin && git push origin --tags && git push github && git push github --tags",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

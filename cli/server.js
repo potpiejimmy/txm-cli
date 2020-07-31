@@ -29,10 +29,10 @@ async function invoke(args) {
     if (!args.length) usage();
 
     let cmd = args[0];
-    if ("list".startsWith(cmd)) await list();
-    else if ("set".startsWith(cmd)) set(args[1], args[2], args[3]);
-    else if ("default".startsWith(cmd)) def(args[1]);
-    else if ("del".startsWith(cmd)) del(args[1]);
+    if ("list".startsWith(cmd)) await list(true);
+    else if ("set".startsWith(cmd)) await set(args[1], args[2], args[3]);
+    else if ("default".startsWith(cmd)) await def(args[1]);
+    else if ("del".startsWith(cmd)) await del(args[1]);
     else if ("stop".startsWith(cmd)) await stop(args[1]);
     else if ("start".startsWith(cmd)) await start(args[1], args[2]);
     else if ("login".startsWith(cmd)) await login(args[1], false);
@@ -43,7 +43,7 @@ async function invoke(args) {
     }
 }
 
-async function list() {
+async function list(showStartStopStatus = false) {
     let servers = global.settings.value("servers");
     if (!servers) {
         console.log("No servers configured");
@@ -58,15 +58,15 @@ async function list() {
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
                      server.path + " " +
-                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")\t" + 
-                     "[" + ((await util.isPortOpen(server.port)) ? 'STARTED' : 'STOPPED') + "]";
+                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")" + 
+                     (showStartStopStatus ? ("\t[" + ((await util.isPortOpen(server.port)) ? 'STARTED' : 'STOPPED') + "]") : "");
     }
     console.log(output);
     console.log();
     console.log("* = current default server(s) / deploy target(s)");
 }
 
-function set(name, path, type='txm') {
+async function set(name, path, type='txm') {
     if (!name || !path) usage();
     if (!['txm','rops','kko'].includes(type)) usage();
     if (!name.match(/^[A-Za-z0-9-_]*$/)) {
@@ -84,8 +84,8 @@ function set(name, path, type='txm') {
     server.type = type;
     global.settings.setValue("servers."+name, server);
     let d = global.settings.value("defaults.server");
-    if (!d || !name.startsWith(d)) def(name); // make default if not already targeted
-    else list();
+    if (!d || !name.startsWith(d)) await def(name); // make default if not already targeted
+    else await list();
 }
 
 function determineServerType(path) {
@@ -108,10 +108,10 @@ function determineServerType(path) {
     }
 }
 
-function del(name) {
+async function del(name) {
     if (!name) usage();
     global.settings.delete("servers." + name);
-    list();
+    await list();
 }
 
 function indexToNameIfIndex(nameOrIndex) {
@@ -138,11 +138,11 @@ function debugPortForServer(name) {
     return BASE_DEBUG_PORT + nameToIndex(name) - 1;
 }
 
-function def(name) {
+async function def(name) {
     if (!name) usage();
     name = indexToNameIfIndex(name);
     global.settings.setValue("defaults.server", name);
-    list();
+    await list();
 }
 
 async function stop(name) {
