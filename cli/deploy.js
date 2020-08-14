@@ -1,5 +1,6 @@
 const fs = require('fs');
 var JSZip = require("jszip");
+var serverUtil = require("./server");
 const util = require('../utils/util');
 
 async function invoke(args) {
@@ -49,6 +50,10 @@ async function deployServer(sbox, server) {
     let sandboxVersion = util.determineSandboxVersion(sbox);
     let path = getDeploymentPath(server);
     let earorigin = getEarOrigin(sbox, server);
+
+    console.log("Stopping server: " + server.name);
+    await serverUtil.stop(server.name);
+
     console.log("Deleting " + path);
     util.deltree(path);
     console.log("Extracting " + path);
