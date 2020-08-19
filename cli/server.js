@@ -207,7 +207,7 @@ async function start(name, option) {
                 if (server.serverType == "jboss") {
                     await startJBoss(server);
                 } else if (server.serverType == "wlp") {
-                    await util.spawn(win ? "server.bat" : "./server", ["debug", nativeServerName], server.path + "/../../../bin");
+                    await util.spawn(win ? "server.bat" : "./server", ["start", nativeServerName], server.path + "/../../../bin");
                 }
             } else {
                 console.log("Server '" + server.name + "' is already running.");
