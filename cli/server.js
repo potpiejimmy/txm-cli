@@ -55,11 +55,11 @@ async function list(showStartStopStatus = false) {
         let index = nameToIndex(server.name);
         output += "\n" + (server.name.startsWith(d) ? "* " : "  ") +
                      "[" + index + "]\t" +
+                     (showStartStopStatus ? ("[" + ((await util.isPortOpen(server.port)) ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m') + "]  ") : "") +
                      "[" + server.name + "]\t" +
                      server.type + "\t" +
                      server.path + " " +
-                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")" + 
-                     (showStartStopStatus ? ("\t[" + ((await util.isPortOpen(server.port)) ? 'STARTED' : 'STOPPED') + "]") : "");
+                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")";
     }
     console.log(output);
     console.log();
