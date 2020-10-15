@@ -3,6 +3,7 @@ const path = require('path');
 const fetch = require('node-fetch');
 const open = require('opn');
 const util = require('../utils/util');
+var Table = require('easy-table')
 
 function usage() {
     console.log("Usage:  tm server <cmd>");
@@ -50,18 +51,31 @@ async function list(showStartStopStatus = false) {
         return;
     }
     let d = global.settings.value("defaults.server");
-    let output = "";
+    let serverData = [];
     for (let server of Object.values(servers)) {
-        let index = nameToIndex(server.name);
-        output += "\n" + (server.name.startsWith(d) ? "* " : "  ") +
-                     "[" + index + "]\t" +
-                     (showStartStopStatus ? ("[" + ((await util.isPortOpen(server.port)) ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m') + "]  ") : "") +
-                     "[" + server.name + "]\t" +
-                     server.type + "\t" +
-                     server.path + " " +
-                     "(" + server.serverType + ", port " + server.port + (server.serverType=='jboss' ? ", mgmt " + server.managementPort + ", debug " + debugPortForServer(server.name) : "") + ")";
+        let serverInfo = {
+            index: nameToIndex(server.name),
+            def: (server.name.startsWith(d) ? "*" : ""),
+            status: "",
+            name: server.name,
+            type: server.type,
+            path: server.path,
+            server: server.serverType,
+            "http port": server.port,
+            "mgmt port": server.serverType=='jboss' ? server.managementPort : "",
+            "debug port": server.serverType=='jboss' ? debugPortForServer(server.name) : "",
+        };
+
+        if(showStartStopStatus)
+            serverInfo.status = (await util.isPortOpen(server.port)) ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m';
+        else
+            delete serverInfo.status;
+
+        serverData.push(serverInfo);
     }
-    console.log(output);
+
+    console.log(Table.print(serverData));
+
     console.log();
     console.log("* = current default server(s) / deploy target(s)");
 }

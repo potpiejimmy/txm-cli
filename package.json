@@ -27,6 +27,7 @@
     "adm-zip": "^0.4.13",
     "clipboardy": "^2.1.0",
     "del": "^4.1.1",
+    "easy-table": "^1.1.1",
     "jszip": "^3.2.2",
     "ncp": "^2.0.0",
     "node-fetch": "^2.6.0",
