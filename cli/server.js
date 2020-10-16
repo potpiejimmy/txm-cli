@@ -53,16 +53,14 @@ async function list(showStartStopStatus = false) {
     }
     let d = global.settings.value("defaults.server");
     let serverData = [];
-    let promises = [];
+    let status = [];
 
     for(let server of Object.values(servers)) {
         //determine debug port for already added servers (so one does not need to remove and add it again)
         if(!server.debugPort) {
             let newServer = JSON.parse(JSON.stringify(server));
             let debug = determineServerDebugPort(server);
-            console.log(debug);
             newServer.debugPort = debug;
-            console.log(newServer);
             global.settings.setValue("servers."+newServer.name, newServer);
             server = newServer;
         }
@@ -81,17 +79,21 @@ async function list(showStartStopStatus = false) {
         };
 
         if(showStartStopStatus)
-            promises.push(util.isPortOpen(server.port));
+            status.push(util.isPortOpen(server.port));
         
         serverData.push(serverInfo);
     };
 
-    promises = await Promise.all(promises);
+    status = await Promise.all(status);
 
-    for(let i = 0; i < promises.length; i++) {
-        serverData[i].status = promises[i] ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m'
+    for(let i = 0; i < serverData.length; i++) {
+        if(i < status.length)
+            serverData[i].status = status[i] ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m';
+        else
+            delete serverData[i].status;
     }
 
+    console.log();
     console.log(Table.print(serverData));
 
     console.log();
@@ -142,7 +144,7 @@ function determineServerType(path) {
 }
 
 function determineServerDebugPort(server) {
-    console.log("reading debug port");
+    //console.log("reading debug port of " + server.name);
 
     let debugPort = "";
     if ('jboss' === server.serverType) {
@@ -174,7 +176,7 @@ function indexToNameIfIndex(nameOrIndex) {
     // setting by index ?
     if (index) {
         nameOrIndex = Object.keys(global.settings.value("servers"))[index-1];
-        if (!nameOrIndex) console.log("Sorry, there is no server with index no. " + index);
+        if (!nameOrIndex) console.log("\n\x1b[31;1mSorry, there is no server with index no. " + index+"\x1b[0m\n");
     }
     return nameOrIndex;
 }
@@ -195,7 +197,9 @@ function debugPortForServer(name) {
 async function def(name) {
     if (!name) usage();
     name = indexToNameIfIndex(name);
-    global.settings.setValue("defaults.server", name);
+    if(name)
+        global.settings.setValue("defaults.server", name);
+
     await list();
 }
 
