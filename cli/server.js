@@ -53,11 +53,10 @@ async function list(showStartStopStatus = false) {
     }
     let d = global.settings.value("defaults.server");
     let serverData = [];
-    let status = [];
 
-    for(let server of Object.values(servers)) {
+    for (let server of Object.values(servers)) {
         //determine debug port for already added servers (so one does not need to remove and add it again)
-        if(!server.debugPort) {
+        if (!server.debugPort) {
             let newServer = JSON.parse(JSON.stringify(server));
             let debug = determineServerDebugPort(server);
             newServer.debugPort = debug;
@@ -68,7 +67,7 @@ async function list(showStartStopStatus = false) {
         let serverInfo = {
             index: nameToIndex(server.name),
             def: (server.name.startsWith(d) ? "*" : ""),
-            status: "",
+            status: null,
             name: server.name,
             type: server.type,
             path: server.path,
@@ -78,19 +77,16 @@ async function list(showStartStopStatus = false) {
             "debug port": server.debugPort
         };
 
-        if(showStartStopStatus)
-            status.push(util.isPortOpen(server.port));
+        if (showStartStopStatus)
+            serverInfo.status = util.isPortOpen(server.port);
+        else
+            delete serverInfo.status; // hide status column
         
         serverData.push(serverInfo);
     };
 
-    status = await Promise.all(status);
-
-    for(let i = 0; i < serverData.length; i++) {
-        if(i < status.length)
-            serverData[i].status = status[i] ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m';
-        else
-            delete serverData[i].status;
+    for (let serverInfo of serverData) {
+        if (serverInfo.status) serverInfo.status = await serverInfo.status ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m';
     }
 
     console.log();
