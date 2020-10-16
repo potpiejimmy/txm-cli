@@ -3,7 +3,7 @@ const path = require('path');
 const fetch = require('node-fetch');
 const open = require('opn');
 const util = require('../utils/util');
-var Table = require('easy-table')
+var Table = require('easy-table');
 
 function usage() {
     console.log("Usage:  tm server <cmd>");
@@ -38,6 +38,7 @@ async function invoke(args) {
     else if ("start".startsWith(cmd)) await start(args[1], args[2]);
     else if ("login".startsWith(cmd)) await login(args[1], false);
     else if ("loginPrincipal".startsWith(cmd)) await login(args[1], true);
+    else if("info".startsWith(cmd)) await determineServerDebugPort("C:\\IBM\\WLP_20\\usr\\servers\\FI_DEV_HKG0");
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -52,7 +53,20 @@ async function list(showStartStopStatus = false) {
     }
     let d = global.settings.value("defaults.server");
     let serverData = [];
-    for (let server of Object.values(servers)) {
+    let promises = [];
+
+    for(let server of Object.values(servers)) {
+        //determine debug port for already added servers (so one does not need to remove and add it again)
+        if(!server.debugPort) {
+            let newServer = JSON.parse(JSON.stringify(server));
+            let debug = determineServerDebugPort(server);
+            console.log(debug);
+            newServer.debugPort = debug;
+            console.log(newServer);
+            global.settings.setValue("servers."+newServer.name, newServer);
+            server = newServer;
+        }
+
         let serverInfo = {
             index: nameToIndex(server.name),
             def: (server.name.startsWith(d) ? "*" : ""),
@@ -63,15 +77,19 @@ async function list(showStartStopStatus = false) {
             server: server.serverType,
             "http port": server.port,
             "mgmt port": server.serverType=='jboss' ? server.managementPort : "",
-            "debug port": server.serverType=='jboss' ? debugPortForServer(server.name) : "",
+            "debug port": server.debugPort
         };
 
         if(showStartStopStatus)
-            serverInfo.status = (await util.isPortOpen(server.port)) ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m';
-        else
-            delete serverInfo.status;
-
+            promises.push(util.isPortOpen(server.port));
+        
         serverData.push(serverInfo);
+    };
+
+    promises = await Promise.all(promises);
+
+    for(let i = 0; i < promises.length; i++) {
+        serverData[i].status = promises[i] ? '\x1b[32;1mSTARTED\x1b[0m' : '\x1b[31;1mSTOPPED\x1b[0m'
     }
 
     console.log(Table.print(serverData));
@@ -96,6 +114,7 @@ async function set(name, path, type='txm') {
     server.name = name;
     server.path = path;
     server.type = type;
+    server.debugPort = determineServerDebugPort(path);
     global.settings.setValue("servers."+name, server);
     let d = global.settings.value("defaults.server");
     if (!d || !name.startsWith(d)) await def(name); // make default if not already targeted
@@ -120,6 +139,27 @@ function determineServerType(path) {
             port: parseInt(port[1])
         };
     }
+}
+
+function determineServerDebugPort(server) {
+    console.log("reading debug port");
+
+    let debugPort = "";
+    if ('jboss' === server.serverType) {
+       debugPort = debugPortForServer(server.name);
+    } else if ('wlp' === server.serverType && fs.existsSync(server.path+"/jvm.options")) {
+        let serverCfg = fs.readFileSync(server.path+"/jvm.options");
+        if(/-agentlib:jdwp=(.*)/.test(serverCfg)) {
+            let debugInfo = /-agentlib:jdwp=(.*)/.exec(serverCfg)[1].split(',');
+            debugInfo.forEach(info => {
+                if(info.startsWith("address=")) {
+                    debugPort = info.substring("address=".length, info.length);
+                }
+            });
+        }
+    }
+
+    return debugPort;
 }
 
 async function del(name) {
