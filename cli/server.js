@@ -320,6 +320,7 @@ async function startJBoss(server) {
     args.push("-Dsun.rmi.dgc.client.gcInterval=3600000");
     args.push("-Dsun.rmi.dgc.server.gcInterval=3600000");
     args.push("-Djboss.modules.system.pkgs=org.jboss.byteman");
+    args.push("-Doracle.jdbc.autoCommitSpecCompliant=false")
     args.push("-Djava.awt.headless=true");
     args.push("-Dorg.jboss.boot.log.file="+server.path+"/log/boot.log");
     args.push("-Dlogging.configuration=file:"+server.path+"/configuration/logging.properties");
