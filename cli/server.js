@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 const open = require('opn');
 const util = require('../utils/util');
 var Table = require('easy-table');
+const parseString = require('xml2js').parseString;
 
 function usage() {
     console.log("Usage:  tm server <cmd>");
@@ -74,7 +75,8 @@ async function list(showStartStopStatus = false) {
             server: server.serverType,
             "http port": server.port,
             "mgmt port": server.serverType=='jboss' ? server.managementPort : "",
-            "debug port": server.debugPort
+            "debug port": server.debugPort,
+			"db user/pw (edbuser/edbpw)": server.db
         };
 
         if (showStartStopStatus)
@@ -112,7 +114,8 @@ async function set(name, path, type='txm') {
     server.name = name;
     server.path = path;
     server.type = type;
-    server.debugPort = determineServerDebugPort(path);
+    server.debugPort = determineServerDebugPort(server);
+    server.db = determineServerDb(server);
     global.settings.setValue("servers."+name, server);
     let d = global.settings.value("defaults.server");
     if (!d || !name.startsWith(d)) await def(name); // make default if not already targeted
@@ -158,6 +161,59 @@ function determineServerDebugPort(server) {
     }
 
     return debugPort;
+}
+
+function determineServerDb(server) {
+    //console.log("reading db user and password of " + server.name);
+
+    let user = "";
+    let pw = "";
+    let edbuser = "";
+    let edbpw = "";
+    if ('jboss' === server.serverType && fs.existsSync(server.path+"/configuration/standalone-full.xml")) {
+       let xml = fs.readFileSync(server.path+"/configuration/standalone-full.xml");
+       parseString(xml, function (err, result) {
+        //console.dir(result);
+        result.server.profile[0].subsystem.forEach(function(item, index, array) {
+            let datasources = item.datasources;
+            if(datasources !== undefined)
+            {
+                datasources[0]['xa-datasource'].forEach(function(item2, index, array) {
+                    let dbname = item2['$']['jndi-name']; 
+                    if(dbname.includes("PCE_JDBC_TX_DATASOURCE"))
+                    {
+                        user = item2.security[0]["user-name"];
+                        pw = item2.security[0]["password"];
+                    }
+                    else if (dbname.includes("PCE_JDBC_EDB_DATASOURCE"))
+                    {
+                        edbuser = item2.security[0]["user-name"];
+                        edbpw = item2.security[0]["password"];
+                    }
+                });
+            }
+          });
+    });
+
+
+    } else if ('wlp' === server.serverType && fs.existsSync(server.path+"/bootstrap.properties")) {
+        let serverCfg = fs.readFileSync(server.path+"/bootstrap.properties");
+        console.log(serverCfg)
+        if(/PCEPAR_DB_USER=(.*)/.test(serverCfg) ) {
+            user = /PCEPAR_DB_USER=(.*)/.exec(serverCfg)[1];
+        }
+        if(/PCEPAR_DB_PW=(.*)/.test(serverCfg) ) {
+            pw = /PCEPAR_DB_PW=(.*)/.exec(serverCfg)[1];
+        }
+        if(/PCEPAR_EDB_USER=(.*)/.test(serverCfg) ) {
+            edbuser = /PCEPAR_EDB_USER=(.*)/.exec(serverCfg)[1];
+        }
+        if(/PCEPAR_EDB_PW=(.*)/.test(serverCfg) ) {
+            edbpw = /PCEPAR_EDB_PW=(.*)/.exec(serverCfg)[1];
+        }
+    }
+
+    return user+"/"+pw+" ("+edbuser+"/"+edbpw+")";
 }
 
 async function del(name) {
