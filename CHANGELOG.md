@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.17.0](https://github.com/potpiejimmy/txm-cli/compare/v1.16.5...v1.17.0) (2020-11-26)
+
+
+### Features
+
+* updated docs, (show server DB feature) ([90bdda5](https://github.com/potpiejimmy/txm-cli/commit/90bdda50e66668ed8f5b3017973700dee736d8cd))
+
 ### [1.16.5](https://github.com/potpiejimmy/txm-cli/compare/v1.16.4...v1.16.5) (2020-10-16)
 
 ### [1.16.4](https://github.com/potpiejimmy/txm-cli/compare/v1.16.3...v1.16.4) (2020-10-15)
