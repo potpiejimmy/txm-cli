@@ -30,11 +30,12 @@
     "easy-table": "^1.1.1",
     "jszip": "^3.2.2",
     "ncp": "^2.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "opn": "^5.5.0",
     "portscanner": "^2.2.0",
     "properties-reader": "0.0.16",
-    "settings-store": "^1.4.1"
+    "settings-store": "^1.4.1",
+    "xml2js": "^0.4.23"
   },
   "devDependencies": {
     "standard-version": "^9.0.0"
