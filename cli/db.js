@@ -142,6 +142,7 @@ async function createSchema(user, pw) {
     if (!user || !pw) usage();
 
     let sql = `
+ALTER SESSION SET "_ORACLE_SCRIPT"=true; 
 DECLARE
 	user_count NUMBER;
 BEGIN
