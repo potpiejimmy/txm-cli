@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.19.0](https://github.com/potpiejimmy/txm-cli/compare/v1.17.1...v1.19.0) (2021-01-12)
+
+
+### Features
+
+* add -DUelZiPMailHost parameter to jboss start ([6b5a0e5](https://github.com/potpiejimmy/txm-cli/commit/6b5a0e56a3015b13cd4bbdd78997363cdf6fb018))
+
 ### [1.17.1](https://github.com/potpiejimmy/txm-cli/compare/v1.17.0...v1.17.1) (2020-12-15)
 
 
