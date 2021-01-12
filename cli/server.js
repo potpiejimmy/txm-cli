@@ -412,6 +412,7 @@ async function startJBoss(server) {
     } else {
         args.push("-DDynsPropertiesPath="+dynsPath);
     }
+	args.push("-DUelZiPMailHost=localhost:25");
     // Program Arguments:
     args.push("org.jboss.modules.Main");
     args.push("-mp");
