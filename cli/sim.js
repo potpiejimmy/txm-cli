@@ -1,4 +1,5 @@
 const util = require('../utils/util');
+const fs = require('fs');
 
 async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
@@ -7,7 +8,11 @@ async function invoke(args) {
         console.log("Please configure default sandbox and server(s) first.");
         return;
     }
-    let execpath = sbox.path + "\\fi-tools-dev-pbmsimclientgui\\SimulationFiles";
+    let execpath = sbox.path + "\\runtime\\fi-tools-dev-pbmsimclientgui";
+	//Fallback for old sandbox versions, see FITM-1376
+	if (!fs.existsSync(execpath)) {
+		execpath = sbox.path + "\\fi-tools-dev-pbmsimclientgui\\SimulationFiles";
+	}
     let executable = execpath + "\\SIPbmSimulatorConfigurator.exe";
     let chameleonpath = sbox.path + "\\runtime\\chameleon";
     let gwpath = sbox.path + "\\runtime\\fi-pbmc-fcgateway";
