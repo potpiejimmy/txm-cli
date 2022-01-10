@@ -22,7 +22,8 @@ async function invoke(args) {
 async function getData(args){
     let url = await createUrl(args[0], args[1])
     let authToken = util.getBase64(await util.getAuthKey('auth-nexusde'))
-    let latestVersion = fetchLatestVersion(url, authToken);
+    let latestVersion = await fetchLatestVersion(url, authToken);
+    console.log(latestVersion);
 }
 
 async function fetchLatestVersion(url, authToken){
@@ -31,26 +32,23 @@ async function fetchLatestVersion(url, authToken){
         headers: { Accept: "application/xml", Authorization: "Basic: " + authToken }
     }).then(result => {
         if(result.status !== 200) throw "HTTP Status code: " + result.status + ". " + result.statusText
-        return result.xml;
-    }).then(xml => {
-        xml2js.Parser().parse(xml)
+        return result.text();
+    }).then(textXml => {
+        xml2js.parseString(textXml, function (err, res) {
+            console.log(res.metadata.versioning[0]['versions']);
+        })
     })
 }
 
-async function fetchChangelog(){
-
-}
-
-async function createUrl(branch, dependency){
-    let br = chooseBranch(branch);
-    let url = "https://nexusde.dieboldnixdorf.com" + chooseBranch(branch) + "content/com/dieboldnixdorf/txm/" + dependency;
+function createUrl(branch, dependency){
+    return "https://nexusde.dieboldnixdorf.com/content/repositories/" + chooseBranch(branch) + "/com/dieboldnixdorf/txm/" + dependency;
 }
 
 function chooseBranch(branch){
-    if(branch.toLowerCase().startsWith("re")){
-        return "";
+    if(branch.toLowerCase().startsWith("p")){
+        return "public";
     }
-    return "";
+    return "snapshots";
 }
 
 module.exports.invoke = invoke;
