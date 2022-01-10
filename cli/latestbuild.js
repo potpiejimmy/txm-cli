@@ -40,7 +40,7 @@ async function fetchLatestVersion(url, authToken, tmVer){
             for(let x = (versions.length-1); x <= 0; x--){
                 if(isCorrectVersion(versions[x], tmVer)){
                     if(url.includes("public")){
-                        if((new RegExp(".+\-Build\.\d{2}")).test(versions[x])){
+                        if((new RegExp(".+\-Build\.\d+$")).test(versions[x])){
                             return versions[x];
                         }
                     }else{
