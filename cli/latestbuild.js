@@ -9,7 +9,7 @@ function usage() {
     console.log();
     console.log("  <br> stands for the selected release branch. public (stable) or snapshot (development)");
     console.log("  <dep> here you can specify your requested dependency. Keep this form: groupId/artifactId")
-    console.log("  <ver> means your TM version. For example: 2.3.0, 3.0.0, 3.1.0 etc.")
+    console.log("  <ver> means your TM version. For example: 2.3, 3.0.0, 3.1.0 etc.")
 
     process.exit();
 }
@@ -39,11 +39,12 @@ async function fetchLatestVersion(url, authToken, tmVer){
             let versions = res.metadata.versioning[0]['versions'][0]['version'];
             for(let x = (versions.length-1); x >= 0; x--){
                 if(isCorrectVersion(versions[x], tmVer)){
-                    if(versions[x].match(/.+-Build\.\d+$/)){
+                    if(url.includes("public") && versions[x].match(/.+-Build\.\d+$/)){
                         textXml = versions[x];
                         break;
-                    }else{
-                        //snapshot search. Here it's going to be a bit complicated.
+                    }else if(url.includes("snapshots")){
+                        textXml = versions[x];
+                        break;
                     }
                 }
             }
@@ -62,10 +63,11 @@ function isCorrectVersion(version, tmver){
 }
 
 function chooseBranch(branch){
-    if(branch.toLowerCase().startsWith("p")){
-        return "public";
+    if(branch.toLowerCase().startsWith("s")){
+        return "snapshots"
+    }else{
+        return "public"
     }
-    return "snapshots";
 }
 
 module.exports.invoke = invoke;
