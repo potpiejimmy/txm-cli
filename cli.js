@@ -2,7 +2,7 @@
 const settings = require("settings-store")
 const db = require('./cli/db')
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","autotest","dump", "ctv"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","latestbuild","autotest","dump", "ctv"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -30,6 +30,8 @@ function usage() {
     console.log("                      with <r> being the desired version (e.g. '19.0.00'),");
     console.log("                      if <r> is omitted, the current sandbox version is used,");
     console.log("                      specify option 'd' to download the artifact from Nexus.");
+    console.log("       latestbuild <branch> <dep> displays latest product build number with changelog")
+    console.log("                      more info in command usage ;)")
     console.log("       autotest       run the automated test suite (Automatiktest).");
     console.log("       dump           dump all current settings as JSON.");
 	console.log("       ctv            run commtraceviewer.");
