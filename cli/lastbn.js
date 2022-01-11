@@ -15,7 +15,7 @@ async function downloadFile(url, name, size, authToken) {
 	console.log("Downloading " + url + " to " + name);
 	var start = new Date();
 	return fetch(url, {
-		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
+		headers: {Accept: "application/json", Authorization: "Basic " + util.getBase64(authToken)}
 	})
 	.then(res => new Promise((resolve,reject) => {
 		const dest = fs.createWriteStream(name);
@@ -33,7 +33,7 @@ async function downloadFile(url, name, size, authToken) {
 
 async function download(result, authToken) {
 	return fetch(result.resourceURI, {
-		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
+		headers: {Accept: "application/json", Authorization: "Basic " + util.getBase64(authToken)}
 	})
 	.then(result => result.json())
 	.then(result => {
@@ -43,13 +43,8 @@ async function download(result, authToken) {
 	.catch((err) => console.log("Can not read download link for " + version + " " + err));
 }
 
-function toBase64(input) {
-	let outBase64 = new Buffer.from(input).toString('base64');
-	return outBase64;
-}
-
 async function lastbn(version, args) {
-    let authToken = await getAuthToken('auth-nexusde');
+    let authToken = await util.getAuthKey('auth-nexusde');
     if (!authToken) return;
 	let url = "https://nexusde.dieboldnixdorf.com/service/local/repositories/snapshots/content/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
 	let result = await askServer(url, version, authToken);
@@ -72,23 +67,9 @@ async function lastbn(version, args) {
 	}
 }
 
-async function getAuthToken(key) {
-	let authToken = global.settings.value("config."+key);
-	if (!authToken) {
-		// if not set in local config, get from NPM variable:
-		authToken = await util.getNPMConfigValue('txm-'+key);
-		if (authToken) global.settings.setValue("config."+key, authToken);
-	}
-    if (!authToken) {
-        console.log("Warning: No authentication token '"+key+"' found. Set it using 'tm config set "+key+" <token>'");
-        return null;
-	}
-	return authToken;
-}
-
 async function askServer(url, version, authToken) {
 	return fetch(url, {
-		headers: {Accept: "application/json", Authorization: "Basic " + toBase64(authToken)}
+		headers: {Accept: "application/json", Authorization: "Basic " + util.getBase64(authToken)}
 	})
 	.then(result => {
 		if (result.status != 200) throw "HTTP " + result.status + " " + result.statusText;
