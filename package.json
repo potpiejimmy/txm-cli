@@ -30,7 +30,7 @@
     "easy-table": "^1.2.0",
     "jszip": "^3.7.1",
     "ncp": "^2.0.0",
-    "node-fetch": "^2.6.1",
+    "node-fetch": "^2.6.7",
     "opn": "^5.5.0",
     "portscanner": "^2.2.0",
     "properties-reader": "0.0.16",

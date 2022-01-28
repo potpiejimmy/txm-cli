@@ -37,6 +37,8 @@ The command line tool offers various subcommands that can be displayed by just e
                       with <r> being the desired version (e.g. '19.0.00'),
                       if <r> is omitted, the current sandbox version is used,
                       specify option 'd' to download the artifact from Nexus.
+       latestbuild <branch> <dep> displays latest product build number with changelog
+                      more info in command usage ;)
        autotest       run the automated test suite (Automatiktest).
        dump           dump all current settings as JSON.
        ctv            run commtraceviewer.
