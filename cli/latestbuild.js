@@ -5,7 +5,7 @@ const xml2js = require('xml2js');
 function usage() {
     console.log("Usage:  tm latestbuild <br> <dep> <ver>");
     console.log();
-    console.log("  Tells you latest product build by your chosen release branch \w changelogs.");
+    console.log("  Tells you latest product build by your chosen release branch");
     console.log();
     console.log("  <br> stands for the selected release branch. public (stable) or snapshot (development)");
     console.log("  <dep> here you can specify your requested dependency. Keep this form: groupId/artifactId")
