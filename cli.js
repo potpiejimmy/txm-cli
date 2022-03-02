@@ -2,7 +2,7 @@
 const settings = require("settings-store")
 const db = require('./cli/db')
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","latestbuild","autotest","dump", "ctv"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build", "changelog","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","latestbuild","autotest","dump", "ctv"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -17,6 +17,8 @@ function usage() {
     console.log("       deploy         deploy and explode EARs from the current default sandbox");
     console.log("                      to the current default server(s).");
     console.log("       build          do a gradlew build without recreating runtime folder.");
+    console.log("       changelog <branch> <dep> <ver> shows you all the changelog entries for");
+    console.log("                      your selected branch, artifact and version.")
     console.log("       rebuild        do a clean build with new runtime folder.");
     console.log("       hotfix         apply hotfix from IDE to deployed server(s).");
     console.log("       db             manage your databases.");
@@ -30,7 +32,7 @@ function usage() {
     console.log("                      with <r> being the desired version (e.g. '19.0.00'),");
     console.log("                      if <r> is omitted, the current sandbox version is used,");
     console.log("                      specify option 'd' to download the artifact from Nexus.");
-    console.log("       latestbuild <branch> <dep> displays latest product build number with changelog")
+    console.log("       latestbuild <branch> <dep> <ver> displays latest product build number")
     console.log("                      more info in command usage ;)")
     console.log("       autotest       run the automated test suite (Automatiktest).");
     console.log("       dump           dump all current settings as JSON.");
