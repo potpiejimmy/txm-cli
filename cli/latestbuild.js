@@ -21,16 +21,20 @@ async function invoke(args) {
 }
 
 async function getData(args){
-    let url = await createUrl(args[0], args[1])
+    let url = await createUrl(args[0], args[1], 2)
     let authToken = util.getBase64(await util.getAuthKey('auth-nexusde'))
-    let latest = await fetchLatestVersion(url, authToken, args[2]);
-    console.log(latest);
+    let latestNexus2 = await fetchLatestVersion(url, authToken, args[2]);
+    url = await createUrl(args[0], args[1], 3)
+    authToken = util.getBase64(await util.getAuthKey('auth-nexus3de'));
+    let latestNexus3 = await fetchLatestVersion(url, authToken, args[2])
+    console.log("Latest on Nexus2: " + latestNexus2);
+    console.log("Latest on Nexus3: " + latestNexus3);
 }
 
 async function fetchLatestVersion(url, authToken, tmVer){
     if (!authToken) return;
     return fetch(url + "/maven-metadata.xml", {
-        headers: { Accept: "application/xml", Authorization: "Basic: " + authToken }
+        headers: { Accept: "application/xml", Authorization: "Basic " + authToken }
     }).then(result => {
         if(result.status !== 200) throw "HTTP Status code: " + result.status + ". " + result.statusText
         return result.text();
@@ -39,10 +43,10 @@ async function fetchLatestVersion(url, authToken, tmVer){
             let versions = res.metadata.versioning[0]['versions'][0]['version'];
             for(let x = (versions.length-1); x >= 0; x--){
                 if(isCorrectVersion(versions[x], tmVer)){
-                    if(url.includes("public") && versions[x].match(/.+-Build\.\d+$/)){
+                    if((url.includes("public") || url.includes("releases")) && versions[x].match(/.+-Build\.\d+$/)){
                         textXml = versions[x];
                         break;
-                    }else if(url.includes("snapshots")){
+                    }else if(url.includes("snapshots") || url.includes("dev")){
                         textXml = versions[x];
                         break;
                     }
@@ -54,19 +58,22 @@ async function fetchLatestVersion(url, authToken, tmVer){
         .catch((err) => console.log(err))
 }
 
-function createUrl(branch, dependency){
-    return "https://nexusde.dieboldnixdorf.com/content/repositories/" + chooseBranch(branch) + "/com/dieboldnixdorf/txm/" + dependency;
+function createUrl(branch, dependency, nexus){
+    return nexus === 2 ?
+        "https://nexusde.dieboldnixdorf.com/content/repositories/" + chooseBranch(branch, nexus) + "/com/dieboldnixdorf/txm/" + dependency
+        :
+        "https://nexus3de.dieboldnixdorf.com/repository/" + chooseBranch(branch, nexus) + "/com/dieboldnixdorf/txm/" + dependency;
 }
 
 function isCorrectVersion(version, tmver){
     return version.includes(tmver);
 }
 
-function chooseBranch(branch){
+function chooseBranch(branch, nexus){
     if(branch.toLowerCase().startsWith("s")){
-        return "snapshots"
+        return (nexus === 2 ? "snapshots" : "tm-maven-dev-group")
     }else{
-        return "public"
+        return (nexus === 2 ? "public" : "tm-maven-releases-group")
     }
 }
 

@@ -63,6 +63,9 @@ module.exports.getAuthKey = async function (key) {
         if (authToken) global.settings.setValue("config." + key, authToken);
     }
     if (!authToken) {
+        if(key === "auth-nexus3de"){
+            console.log("Hello. Support for Nexus 3 has been added. If you want to use new features on this repository, please add new auth key.\nOld nexus key is still valid and saved.")
+        }
         console.log("Warning: No authentication token '" + key + "' found. Set it using 'tm config set " + key + " <token>'");
         return null;
     }
