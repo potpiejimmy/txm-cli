@@ -21,7 +21,7 @@ async function invoke(args) {
 async function getData(args) {
     let url = await createUrl(args[0], args[1], args[2])
     let changelogFileName = args[1].replace(/.+\//, "") + "-" + args[2] + "-changelog.json"
-    let authToken = util.getBase64(await util.getAuthKey('auth-nexusde'))
+    let authToken = util.getBase64(await util.getAuthKey('auth-nexus3de'))
     let changelogs = JSON.parse(await fetchLatestVersion(url, authToken, changelogFileName, args[2])).changeLog[args[2]];
     for(let entry in changelogs){
         const changelogEntry = changelogs[entry];
@@ -33,10 +33,10 @@ async function getData(args) {
     }
 }
 
-async function fetchLatestVersion(url, authToken, changelogFile) {
+async function fetchLatestVersion(url, authToken, changelogFile, version) {
     if (!authToken) return;
-    return fetch(url + "/" + changelogFile, {
-        headers: {Accept: "application/json", Authorization: "Basic: " + authToken}
+    return fetch(url + "/" + version + "/" + changelogFile, {
+        headers: {Accept: "application/json", Authorization: "Basic " + authToken}
     }).then(result => {
         if (result.status !== 200) throw "HTTP Status code: " + result.status + ". " + result.statusText
         return result.text();
@@ -44,15 +44,15 @@ async function fetchLatestVersion(url, authToken, changelogFile) {
         .catch((err) => console.log(err))
 }
 
-function createUrl(branch, dependency, version) {
-    return "https://nexusde.dieboldnixdorf.com/content/repositories/" + chooseBranch(branch) + "/com/dieboldnixdorf/txm/" + dependency + "/" + version;
+function createUrl(branch, dependency){
+    return "https://nexus3de.dieboldnixdorf.com/repository/" + chooseBranch(branch) + "/com/dieboldnixdorf/txm/" + dependency;
 }
 
-function chooseBranch(branch) {
-    if (branch.toLowerCase().startsWith("s")) {
-        return "snapshots"
-    } else {
-        return "public"
+function chooseBranch(branch){
+    if(branch.toLowerCase().startsWith("s")){
+        return "tm-maven-dev-group"
+    }else{
+        return "tm-maven-releases-group"
     }
 }
 
