@@ -39,6 +39,8 @@ The command line tool offers various subcommands that can be displayed by just e
                       specify option 'd' to download the artifact from Nexus.
        latestbuild <branch> <dep> displays latest product build number with changelog
                       more info in command usage ;)
+       changelog <branch> <dep> <ver> shows you all the changelog entries for
+                      your selected branch, artifact and version.
        autotest       run the automated test suite (Automatiktest).
        dump           dump all current settings as JSON.
        ctv            run commtraceviewer.
