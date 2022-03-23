@@ -17,18 +17,14 @@ function usage() {
 async function invoke(args) {
 
     if (args.length !== 3) usage();
-    return await getData(args);
+    return getData(args);
 }
 
 async function getData(args){
-    let url = await createUrl(args[0], args[1], 2)
-    let authToken = util.getBase64(await util.getAuthKey('auth-nexusde'))
-    let latestNexus2 = await fetchLatestVersion(url, authToken, args[2]);
-    url = await createUrl(args[0], args[1], 3)
-    authToken = util.getBase64(await util.getAuthKey('auth-nexus3de'));
+    let url = await createUrl(args[0], args[1])
+    const authToken = util.getBase64(await util.getAuthKey('auth-nexus3de'));
     let latestNexus3 = await fetchLatestVersion(url, authToken, args[2])
-    console.log("Latest on Nexus2: " + latestNexus2);
-    console.log("Latest on Nexus3: " + latestNexus3);
+    console.log(latestNexus3);
 }
 
 async function fetchLatestVersion(url, authToken, tmVer){
@@ -46,7 +42,7 @@ async function fetchLatestVersion(url, authToken, tmVer){
                     if((url.includes("public") || url.includes("releases")) && versions[x].match(/.+-Build\.\d+$/)){
                         textXml = versions[x];
                         break;
-                    }else if(url.includes("snapshots") || url.includes("dev")){
+                    }else if((url.includes("snapshots") || url.includes("dev")) && versions[x].match(/.+-Build\.\d+.+-SNAPSHOT/)){
                         textXml = versions[x];
                         break;
                     }
@@ -54,27 +50,19 @@ async function fetchLatestVersion(url, authToken, tmVer){
             }
         })
         return textXml;
-    })
-        .catch((err) => console.log(err))
+    }).catch((err) => console.log(err))
 }
 
-function createUrl(branch, dependency, nexus){
-    return nexus === 2 ?
-        "https://nexusde.dieboldnixdorf.com/content/repositories/" + chooseBranch(branch, nexus) + "/com/dieboldnixdorf/txm/" + dependency
-        :
-        "https://nexus3de.dieboldnixdorf.com/repository/" + chooseBranch(branch, nexus) + "/com/dieboldnixdorf/txm/" + dependency;
+function createUrl(branch, dependency){
+    return "https://nexus3de.dieboldnixdorf.com/repository/" + chooseBranch(branch) + "/com/dieboldnixdorf/txm/" + dependency;
 }
 
 function isCorrectVersion(version, tmver){
-    return version.includes(tmver);
+    return version.match(new RegExp(`${tmver}-Build`));
 }
 
-function chooseBranch(branch, nexus){
-    if(branch.toLowerCase().startsWith("s")){
-        return (nexus === 2 ? "snapshots" : "tm-maven-dev-group")
-    }else{
-        return (nexus === 2 ? "public" : "tm-maven-releases-group")
-    }
+function chooseBranch(branch){
+    return branch.toLowerCase().startsWith("s") ? "tm-maven-dev-group" : "tm-maven-releases-group"
 }
 
 module.exports.invoke = invoke;
