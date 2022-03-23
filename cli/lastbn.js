@@ -53,7 +53,7 @@ async function lastbn(version, args) {
 
     if (result) {
         console.log(result);
-        if (args[1].toLowerCase().startsWith('d')) {
+        if (args.length > 1 && args[1].toLowerCase().startsWith('d')) {
             // download artifact
             return download(url + result + "/", version, authToken);
         } else {
