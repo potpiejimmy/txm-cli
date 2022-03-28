@@ -26,7 +26,7 @@ function usage() {
     console.log("       sim            configure and run the PBM simulator GUI.");
     console.log("       ropssim [ui]   configure and run ROPS gateway and ROPS cmd client,");
     console.log("                      specify option 'ui' to start the GUI version.");
-    console.log("       lastbn <r> [d] display last build number (and copy to clipboard),");
+    console.log("       lastbn [<r> [d]] display last build number (and copy to clipboard),");
     console.log("                      with <r> being the desired version (e.g. '19.0.00'),");
     console.log("                      if <r> is omitted, the current sandbox version is used,");
     console.log("                      specify option 'd' to download the artifact from Nexus.");
