@@ -3,7 +3,7 @@ var JSZip = require("jszip");
 var serverUtil = require("./server");
 const util = require('../utils/util');
 
-async function invoke(args) {
+async function invoke(_args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     let defsrv = global.settings.value("defaults.server");
     if (!sbox || !defsrv) {
@@ -17,14 +17,14 @@ async function invoke(args) {
             console.log("Deploying " + server.type + " to " + server.path);
             await deployServer(sbox, server);
         }
-    };
+    }
 }
 
 function getDeploymentPath(server) {
     let earname = "txm-server.ear";
-    if (server.type == 'rops') {
+    if (server.type === 'rops') {
         earname = "txm-server-rops.ear";
-    } else if (server.type == 'kko') {
+    } else if (server.type === 'kko') {
         earname = "txm-server-vorrechner.ear";
     }
     let path = server.path;
@@ -37,9 +37,9 @@ function getDeploymentPath(server) {
 function getEarOrigin(sbox, server) {
     let sandboxVersion = util.determineSandboxVersion(sbox);
     let earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/txm-server.ear";
-    if (server.type == 'rops') {
+    if (server.type === 'rops') {
         earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-rops/txm-server-rops.ear";
-    } else if (server.type == 'kko') {
+    } else if (server.type === 'kko') {
         earorigin = "fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT/fi-asm-assembly-vorrechner/txm-server-vorrechner.ear";
     }
     console.log("EAR file: " + earorigin);
@@ -60,10 +60,11 @@ async function deployServer(sbox, server) {
     await extractEarFromDist(sbox.path + "/fi-asm-assembly/build/distributions/fi-asm-assembly-"+sandboxVersion+"-SNAPSHOT.zip", earorigin, path);
 
     let basepath = path;
-    if (server.type != 'rops') {
+    if (server.type !== 'rops') {
         // for txm and kko servers, explode the ear, war and FI fragment:
         util.unjar(path);
-        path += "/ocm.war";
+        if(fs.existsSync(path + "/ocm.war")) path += "/ocm.war";
+        else path += "server.war"
         util.unjar(path);
         path += "/WEB-INF/lib/fi-ocm-wf.jar";
         util.unjar(path);
