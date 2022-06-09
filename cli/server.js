@@ -433,6 +433,7 @@ async function startJBoss(server) {
 
 async function waitForServerReady(server) {
     let serverReady = false;
+    await util.asyncPause(180000);
     do {
         try {
             let res = await fetch("http://localhost:"+server.port+"/rs/api/login", {
@@ -446,7 +447,7 @@ async function waitForServerReady(server) {
         } catch (err) {
             serverReady = false;
         }
-        if (!serverReady) await util.asyncPause(1000);
+        if (!serverReady) await util.asyncPause(5000);
     } while (!serverReady);
     console.log("Server " + server.name + " is ready.");
 }
