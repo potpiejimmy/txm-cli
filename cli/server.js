@@ -433,7 +433,9 @@ async function startJBoss(server) {
 
 async function waitForServerReady(server) {
     let serverReady = false;
-    await util.asyncPause(180000);
+    if(server.serverType === 'wlp'){
+        await util.asyncPause(120000)
+    }
     do {
         try {
             let res = await fetch("http://localhost:"+server.port+"/rs/api/login", {
