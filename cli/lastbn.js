@@ -82,6 +82,7 @@ async function askServer(url, version, authToken) {
                 let initiator = url.includes("Dev.master");
                 let versions = decideVersioning(res, initiator);
                 let reg = new RegExp(`${version}-Build\\..-Dev\\.master.+`);
+                if (version !== util.determineSandboxVersion() && version !== '19.1.00')  reg = new RegExp(`${version}.+?-Build\\..+`);
                 for (let x = (versions.length - 1); x >= 0; x--) {
                     if (!initiator && reg.test(versions[x])) {
                         result = versions[x]
