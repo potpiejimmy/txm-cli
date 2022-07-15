@@ -10,7 +10,7 @@ async function invoke(args) {
     // last, if no sandbox present, use the default version
     let argsSorted = fixArguments(args);
     argsSorted['version'] = argsSorted['version'] || util.determineSandboxVersion() || '19.1.00';
-    console.log(argsSorted)
+    if(!argsSorted['branch']) argsSorted['branch'] = "master"
     await lastbn(argsSorted);
 }
 
