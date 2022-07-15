@@ -8,21 +8,30 @@ async function invoke(args) {
     // first, use the release specified as argument
     // second, if no argument, determine the release version from the current sandbox's version.txt
     // last, if no sandbox present, use the default version
-    fixArguments(args);
-    let version = args[0] || util.determineSandboxVersion() || '19.1.00';
-    await lastbn(version, args);
+    let argsSorted = fixArguments(args);
+    argsSorted['version'] = argsSorted['version'] || util.determineSandboxVersion() || '19.1.00';
+    console.log(argsSorted)
+    await lastbn(argsSorted);
 }
 
 function fixArguments(args) {
-    if (args.length > 0 && args[0].toLowerCase().startsWith("d")) {
-        args[1] = args[0];
-        args[0] = util.determineSandboxVersion() || '19.1.00'
-    }
+    let argsSorted = [];
+    args.forEach(a => {
+        if(a.toUpperCase() === "D"){
+            argsSorted['download'] = true;
+        }
+        else if(a.length > 1 && a.length < 8 && a.match(/^\d/)){
+            argsSorted['version'] = a;
+        }else{
+            argsSorted['branch'] = a;
+        }
+    });
+    return argsSorted;
 }
 
 async function downloadFile(url, name, authToken) {
     console.log("Downloading " + url + " to " + name);
-    var start = new Date();
+    let start = new Date();
     return fetch(url, {
         headers: {Accept: "application/json", Authorization: "Basic " + util.getBase64(authToken)}
     })
@@ -39,23 +48,23 @@ async function downloadFile(url, name, authToken) {
         }));
 }
 
-async function download(url, version, authToken) {
-    const finalFile = await askServer(url, version, authToken);
+async function download(url, args, authToken) {
+    const finalFile = await askServer(url, args, authToken);
     return downloadFile(url + "fi-asm-assembly-" + finalFile + ".zip", finalFile + ".zip", authToken)
 }
 
-async function lastbn(version, args) {
+async function lastbn(args) {
     let authToken = await util.getAuthKey('auth-nexus3de');
     if (!authToken) return;
     let url = "https://nexus3de.dieboldnixdorf.com/repository/maven-dev-group/com/dieboldnixdorf/txm/project/fi/fi-asm-assembly/";
-    let result = await askServer(url, version, authToken)
+    let result = await askServer(url, args, authToken)
 
 
     if (result) {
         console.log(result);
-        if (args.length > 1 && args[1].toLowerCase().startsWith('d')) {
+        if (args.length > 1 && args['download']) {
             // download artifact
-            return download(url + result + "/", version, authToken);
+            return download(url + result + "/", args, authToken);
         } else {
             // or copy to clipboard
             try {
@@ -69,22 +78,31 @@ async function lastbn(version, args) {
     }
 }
 
-async function askServer(url, version, authToken) {
+async function askServer(url, args, authToken) {
     return fetch(url + "maven-metadata.xml", {
         headers: {Accept: "application/xml", Authorization: "Basic " + util.getBase64(authToken)}
     })
         .then(result => {
-            if (result.status !== 200) throw "HTTP " + result.status + " " + result.statusText;
+            if (result.status !== 200) throw new Error("HTTP " + result.status + " " + result.statusText);
             return result.text()
         })
         .then(result => {
-            xml2js.parseString(result, function (err, res) {
-                let initiator = url.includes("Dev.master");
+            xml2js.parseString(result, function (_err, res) {
+                let initiator = url.includes("-Build.");
                 let versions = decideVersioning(res, initiator);
-                let reg = new RegExp(`${version}-Build\\..-Dev\\.master.+`);
-                if (version !== util.determineSandboxVersion() && version !== '19.1.00')  reg = new RegExp(`${version}.+?-Build\\..+`);
+                let reg = new RegExp(`${args['version']}.+?Build\..+`);
+                if (args['branch']) reg = new RegExp(`${args['version']}.+?Build\..+?${sanitizeBranchName(args['branch'])}.+`);
+                //No need to loop if latest build for the requested version is in the latest tag.
+                //Had to ignore 22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT manually - Nexus has maybe bugged out
+                if(reg.test(res.metadata.versioning[0]['latest'][0]) && res.metadata.versioning[0]['latest'][0] !== "22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT"){
+                    result = res.metadata.versioning[0]['latest'][0];
+                    return result;
+                }
+
+                //Otherwise loop from down to up.
                 for (let x = (versions.length - 1); x >= 0; x--) {
-                    if (!initiator && reg.test(versions[x])) {
+                    //Had to ignore 22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT manually - Nexus has maybe bugged out
+                    if (!initiator && reg.test(versions[x]) && versions[x] !== "22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT") {
                         result = versions[x]
                         return result;
                     }
@@ -97,12 +115,16 @@ async function askServer(url, version, authToken) {
                 }
             })
             return result;
-        }).catch((err) => console.log("Can not read build version for " + version + ": " + err));
+        }).catch((err) => console.log("Can not read build version for " + args['version'] + ": " + err));
 }
 
 function decideVersioning(xml, initiator) {
     if (!initiator) return xml.metadata.versioning[0]['versions'][0]['version'];
     return xml.metadata.versioning[0]['snapshotVersions'][0]['snapshotVersion'];
+}
+
+function sanitizeBranchName(branch){
+    return branch.replace("-", ".").replace("/", ".");
 }
 
 module.exports.invoke = invoke;
