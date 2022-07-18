@@ -64,7 +64,7 @@ async function deployServer(sbox, server) {
         // for txm and kko servers, explode the ear, war and FI fragment:
         util.unjar(path);
         if(fs.existsSync(path + "/ocm.war")) path += "/ocm.war";
-        else path += "server.war"
+        else path += "/server.war"
         util.unjar(path);
         path += "/WEB-INF/lib/fi-ocm-wf.jar";
         util.unjar(path);
