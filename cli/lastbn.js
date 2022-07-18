@@ -15,7 +15,7 @@ async function invoke(args) {
 }
 
 function fixArguments(args) {
-    let argsSorted = [];
+    let argsSorted = {};
     args.forEach(a => {
         if(a.toUpperCase() === "D"){
             argsSorted['download'] = true;
