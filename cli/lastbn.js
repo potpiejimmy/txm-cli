@@ -41,7 +41,7 @@ async function downloadFile(url, name, authToken) {
             dest.on('finish', () => {
                 let end = (new Date() - start) / 1000;
                 console.info('Execution time: %ds', end);
-                console.info("Path to the file: " + __dirname + "/" + dest.path);
+                console.info("Path to the file: " + __dirname + "/../" + dest.path);
                 resolve();
             });
             dest.on('error', err => reject(err));
@@ -62,7 +62,7 @@ async function lastbn(args) {
 
     if (result) {
         console.log(result);
-        if (args.length > 1 && args['download']) {
+        if (args['download']) {
             // download artifact
             return download(url + result + "/", args, authToken);
         } else {
@@ -94,7 +94,7 @@ async function askServer(url, args, authToken) {
                 if (args['branch']) reg = new RegExp(`${args['version']}.+?Build\..+?${sanitizeBranchName(args['branch'])}.+`);
                 //No need to loop if latest build for the requested version is in the latest tag.
                 //Had to ignore 22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT manually - Nexus has maybe bugged out
-                if(reg.test(res.metadata.versioning[0]['latest'][0]) && res.metadata.versioning[0]['latest'][0] !== "22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT"){
+                if(!initiator && reg.test(res.metadata.versioning[0]['latest'][0]) && res.metadata.versioning[0]['latest'][0] !== "22.1.00-Build.1-Dev.FITM.1511.TM.3.1.6264-24b3144-SNAPSHOT"){
                     result = res.metadata.versioning[0]['latest'][0];
                     return result;
                 }
@@ -107,6 +107,7 @@ async function askServer(url, args, authToken) {
                         return result;
                     }
                     else if(initiator){
+
                        if(versions[x].extension[0] === 'zip'){
                            result = versions[x].value[0];
                            return versions[x].value[0];
