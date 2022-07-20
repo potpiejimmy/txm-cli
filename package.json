@@ -33,7 +33,7 @@
     "node-fetch": "^2.6.7",
     "opn": "^5.5.0",
     "portscanner": "^2.2.0",
-    "properties-reader": "0.0.16",
+    "properties-reader": "2.2.0",
     "settings-store": "^1.4.1",
     "xml2js": "^0.4.23"
   },
