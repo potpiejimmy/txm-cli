@@ -433,9 +433,13 @@ async function startJBoss(server) {
 
 async function waitForServerReady(server) {
     let serverReady = false;
-    if(server.serverType === 'wlp'){
-        await util.asyncPause(120000)
+    let serverStartInitialWaitDelay = global.settings.value("config.ServerStartInitialWaitDelay");
+    if (!serverStartInitialWaitDelay) {
+        console.log("WARN ServerStartInitialWaitDelay not set, please set using 'tm c s ServerStartInitialWaitDelay <seconds>'. Using 60 as default.");
+        serverStartInitialWaitDelay = "60";
     }
+    console.log("Note: initial wait delay is " + serverStartInitialWaitDelay + "s, configure with 'tm c s ServerStartInitialWaitDelay'.");
+    await util.asyncPause(parseInt(serverStartInitialWaitDelay) * 1000);
     do {
         try {
             let res = await fetch("http://localhost:"+server.port+"/rs/api/login", {
