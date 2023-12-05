@@ -92,7 +92,7 @@ module.exports.determineSandboxVersion = function (sbox) {
     sbox = sbox || global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     if (!sbox) return null;
     let sandboxVersionFile = fs.readFileSync(sbox.path + "/version.txt");
-    let sandboxVersion = /([\d\.]*)-.*/.exec(sandboxVersionFile)[1];
+    let sandboxVersion = /([\d\.].*?)-.*/.exec(sandboxVersionFile)[1];
     return sandboxVersion;
 }
 
