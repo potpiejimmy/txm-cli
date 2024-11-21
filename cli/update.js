@@ -1,8 +1,6 @@
-const util = require('../utils/util');
+import * as util from '../utils/util.js';
 
-async function invoke(args) {
+export async function invoke(args) {
     var win = process.platform === "win32";
     await util.spawn(win ? "npm.cmd" : "npm",["i","-g","txm-cli@latest"], process.cwd());
 }
-
-module.exports.invoke = invoke;

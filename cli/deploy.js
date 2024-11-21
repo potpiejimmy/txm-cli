@@ -1,9 +1,9 @@
-const fs = require('fs');
-var JSZip = require("jszip");
-var serverUtil = require("./server");
-const util = require('../utils/util');
+import fs from 'fs';
+import JSZip from "jszip";
+import * as serverUtil from "./server.js";
+import * as util from '../utils/util.js';
 
-async function invoke(_args) {
+export async function invoke(_args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     let defsrv = global.settings.value("defaults.server");
     if (!sbox || !defsrv) {
@@ -20,7 +20,7 @@ async function invoke(_args) {
     }
 }
 
-function getDeploymentPath(server) {
+export function getDeploymentPath(server) {
     let earname = "txm-server.ear";
     if (server.type === 'rops') {
         earname = "txm-server-rops.ear";
@@ -98,6 +98,3 @@ async function extractEarFromDist(zipfile, earfile, outfile) {
 
     fs.writeFileSync(outfile, data);
 }
-
-module.exports.invoke = invoke;
-module.exports.getDeploymentPath = getDeploymentPath;

@@ -1,6 +1,6 @@
-const util = require('../utils/util');
-const fs = require('fs');
-const path = require('path');
+import * as util from '../utils/util.js';
+import fs from 'fs';
+import path from 'path';
 
 function usage() {
     console.log("Usage:  tm cpgen 1|2|<file1> [<file2> [<file3> ...]]");
@@ -14,7 +14,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
     
     if (!args[0]) usage();
 
@@ -92,5 +92,3 @@ function copyCpgFileImpl(sbox, srcfile, targetname) {
         console.error("Copy failed: " + e);
     }
 }
-
-module.exports.invoke = invoke;

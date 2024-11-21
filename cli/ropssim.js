@@ -1,7 +1,7 @@
-const util = require('../utils/util');
-const fs = require('fs');
+import * as util from '../utils/util.js';
+import fs from 'fs';
 
-async function invoke(args) {
+export async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     let servers = global.settings.value("servers");
     if (!sbox || !servers) {
@@ -53,5 +53,3 @@ function configurePort(sbox) {
     cfg = cfg.toString().replace(/"ServerUrl">.*$/gm, "\"ServerUrl\">http://localhost:" + util.determineServerPort(servers,'rops') + "</sectionEntry>");
     fs.writeFileSync(cfgFile, cfg);
 }
-
-module.exports.invoke = invoke;

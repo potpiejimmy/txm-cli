@@ -11,7 +11,7 @@ function usage() {
     process.exit();
 }
 
-function invoke(args) {
+export function invoke(args) {
 
     if (!args.length) usage();
 
@@ -57,5 +57,3 @@ function def(name) {
     global.settings.setValue("defaults.sandbox", name);
     list();
 }
-
-module.exports.invoke = invoke;

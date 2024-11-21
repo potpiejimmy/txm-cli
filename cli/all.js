@@ -1,7 +1,7 @@
-const util = require('../utils/util');
-const deploy = require('./deploy');
+import * as util from '../utils/util.js';
+import * as deploy from './deploy.js';
 
-async function invoke(args) {
+export async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     console.log("Running buildClean.sh");
     await util.exec("buildClean.sh", sbox.path+"/scripts");
@@ -9,5 +9,3 @@ async function invoke(args) {
     await util.exec("createDb.sh", sbox.path+"/scripts");
     await deploy.invoke();
 }
-
-module.exports.invoke = invoke;

@@ -1,5 +1,5 @@
-const fetch = require("node-fetch");
-const util = require('../utils/util');
+import fetch from "node-fetch";
+import * as util from '../utils/util.js';
 
 function usage() {
     console.log("Usage:  tm changelog <br> <dep> <ver>");
@@ -13,7 +13,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
     if (args.length !== 3) usage();
     return await getData(args);
 }
@@ -55,5 +55,3 @@ function chooseBranch(branch){
         return "tm-maven-releases-group"
     }
 }
-
-module.exports.invoke = invoke;

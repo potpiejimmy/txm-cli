@@ -1,7 +1,7 @@
-const util = require('../utils/util');
-const fs = require('fs');
+import * as util from '../utils/util.js';
+import fs from 'fs';
 
-async function invoke(args) {
+export async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     let servers = global.settings.value("servers");
     if (!sbox || !servers) {
@@ -21,5 +21,3 @@ async function invoke(args) {
     console.log(exeargs);
     util.spawnDetached(executable, exeargs, execpath);
 }
-
-module.exports.invoke = invoke;

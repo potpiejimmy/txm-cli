@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const settings = require("settings-store")
-const db = require('./cli/db')
+import settings from "settings-store";
+import * as db from './cli/db.js';
 
 const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build", "changelog","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","latestbuild","autotest","dump", "ctv"];
 
@@ -77,7 +77,7 @@ async function callCli(cmd, args) {
     }
 
     try {
-        let cli = require("./cli/" + cmd);
+        const cli = await import("./cli/" + cmd + ".js");
         await cli.invoke(args);
     } catch (err) {
         console.log(err);

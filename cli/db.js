@@ -1,6 +1,6 @@
-const fs = require('fs');
-const util = require('../utils/util');
-const propreader = require('properties-reader');
+import fs from 'fs';
+import * as util from '../utils/util.js';
+import propreader from 'properties-reader';
 
 function usage() {
     console.log("Usage:  tm db <cmd>");
@@ -19,7 +19,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
     if (!args.length) usage();
 
     let cmd = args[0];
@@ -43,7 +43,7 @@ function showCurrentSettings() {
     console.log("Current DB: " + getDBConnectionString());
 }
 
-function getDBConnectionString() {
+export function getDBConnectionString() {
     let dbprops = propreader(getGradlePropertiesFile());
     return dbprops.get("dbUser") + "/" + dbprops.get("dbPW") + "@"+getSID();
 }
@@ -179,6 +179,3 @@ quit;
     sql = sql.replace(/\$user/g, user).replace(/\$password/g, pw);
     await exexuteAsDBA(sql);
 }
-
-module.exports.invoke = invoke;
-module.exports.getDBConnectionString = getDBConnectionString;

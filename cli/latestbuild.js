@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
-const util = require('../utils/util');
-const xml2js = require('xml2js');
+import fetch from "node-fetch";
+import * as util from '../utils/util.js';
+import xml2js from 'xml2js';
 
 function usage() {
     console.log("Usage:  tm latestbuild <br> <dep> <ver>");
@@ -14,7 +14,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
 
     if (args.length !== 3) usage();
     return getData(args);
@@ -64,5 +64,3 @@ function isCorrectVersion(version, tmver){
 function chooseBranch(branch){
     return branch.toLowerCase().startsWith("s") ? "tm-maven-dev-group" : "tm-maven-releases-group"
 }
-
-module.exports.invoke = invoke;

@@ -1,7 +1,7 @@
-const util = require('../utils/util');
-const db = require('./db');
+import * as util from '../utils/util.js';
+import * as db from './db.js';
 
-async function invoke(args) {
+export async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     let defsrv = global.settings.value("defaults.server");
     if (!sbox || !defsrv) {
@@ -15,5 +15,3 @@ async function invoke(args) {
     await util.pressEnter();
     console.log("Running Automatiktest.");
 }
-
-module.exports.invoke = invoke;

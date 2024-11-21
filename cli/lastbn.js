@@ -1,10 +1,10 @@
-const fetch = require("node-fetch");
-const clipboardy = require("clipboardy");
-const xml2js = require('xml2js');
-const fs = require('fs');
-const util = require('../utils/util');
+import fetch from "node-fetch";
+import clipboardy from "clipboardy";
+import xml2js from 'xml2js';
+import fs from 'fs';
+import * as util from '../utils/util.js';
 
-async function invoke(args) {
+export async function invoke(args) {
     // first, use the release specified as argument
     // second, if no argument, determine the release version from the current sandbox's version.txt
     // last, if no sandbox present, use the default version
@@ -127,5 +127,3 @@ function decideVersioning(xml, initiator) {
 function sanitizeBranchName(branch){
     return branch.replace("-", ".").replace("/", ".");
 }
-
-module.exports.invoke = invoke;

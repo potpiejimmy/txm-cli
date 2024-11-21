@@ -3,6 +3,7 @@
   "version": "1.22.1",
   "description": "The ultimate CLI for Transaction Middleware (TM)",
   "main": "cli.js",
+  "type": "module",
   "scripts": {
     "start": "node cli.js",
     "push": "git push --follow-tags -v",
@@ -23,21 +24,21 @@
   "bin": {
     "tm": "./cli.js"
   },
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  },
   "dependencies": {
-    "adm-zip": "^0.4.13",
-    "clipboardy": "^2.1.0",
-    "del": "^4.1.1",
+    "adm-zip": "^0.5.16",
+    "clipboardy": "^4.0.0",
+    "del": "^8.0.0",
     "easy-table": "^1.2.0",
-    "jszip": "^3.7.1",
+    "jszip": "^3.10.1",
     "ncp": "^2.0.0",
-    "node-fetch": "^2.6.7",
+    "node-fetch": "^3.3.2",
     "opn": "^5.5.0",
     "portscanner": "^2.2.0",
-    "properties-reader": "0.0.16",
+    "properties-reader": "^2.3.0",
     "settings-store": "^1.4.1",
-    "xml2js": "^0.4.23"
-  },
-  "devDependencies": {
-    "standard-version": "^9.3.2"
+    "xml2js": "^0.6.2"
   }
 }
