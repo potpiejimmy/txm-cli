@@ -1,6 +1,7 @@
 import fs from 'fs';
 import * as util from '../utils/util.js';
 import propreader from 'properties-reader';
+import os from 'os';
 
 function usage() {
     console.log("Usage:  tm db <cmd>");
@@ -36,7 +37,7 @@ export async function invoke(args) {
 }
 
 function getGradlePropertiesFile() {
-    return require('os').homedir() + "/.gradle/gradle.properties";
+    return os.homedir() + "/.gradle/gradle.properties";
 }
 
 function showCurrentSettings() {
