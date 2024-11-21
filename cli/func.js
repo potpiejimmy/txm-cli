@@ -24,7 +24,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
 
     if (!args.length) usage();
 
@@ -69,5 +69,3 @@ async function execute(name) {
         await global.callCli(args[0],args.slice(1));
     }
 }
-
-module.exports.invoke = invoke;

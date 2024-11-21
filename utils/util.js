@@ -1,16 +1,16 @@
-const {exec, spawn, spawnSync} = require('child_process');
-const portscanner = require('portscanner');
-const fs = require('fs');
-const del = require('del');
-const ncp = require('ncp');
-var AdmZip = require('adm-zip');
+import * as cpr from 'child_process';
+import portscanner from 'portscanner';
+import fs from 'fs';
+import { deleteSync } from 'del';
+import ncp from 'ncp';
+import AdmZip from 'adm-zip';
 
 /**
  * Executes a command with promise
  */
-module.exports.exec = async function (cmdline, cwd) {
+export async function exec(cmdline, cwd) {
     return new Promise((resolve, reject) => {
-        exec(cmdline, {cwd: cwd}, err => {
+        cpr.exec(cmdline, {cwd: cwd}, err => {
             if (err) reject();
             else resolve();
         });
@@ -20,9 +20,10 @@ module.exports.exec = async function (cmdline, cwd) {
 /**
  * Spawns a child command with inherited stdio.
  */
-module.exports.spawn = async function (cmd, args, cwd, stdindata) {
-    const childProcess = spawn(cmd, args, {
+export async function spawn(cmd, args, cwd, stdindata) {
+    const childProcess = cpr.spawn(cmd, args, {
         cwd: cwd,
+        shell: true,
         stdio: [stdindata ? 'pipe' : process.stdin, process.stdout, process.stderr]
     });
 
@@ -37,9 +38,10 @@ module.exports.spawn = async function (cmd, args, cwd, stdindata) {
 /**
  * Spawns a detached child process without stdio
  */
-module.exports.spawnDetached = async function (cmd, args, cwd) {
-    spawn(cmd, args, {
+export async function spawnDetached(cmd, args, cwd) {
+    cpr.spawn(cmd, args, {
         cwd: cwd,
+        shell: true,
         silent: true,
         detached: true,
         stdio: ['inherit', 'inherit', 'inherit']
@@ -49,14 +51,14 @@ module.exports.spawnDetached = async function (cmd, args, cwd) {
 /**
  * Checks if a port is open, returns boolean
  */
-module.exports.isPortOpen = async function (port) {
+export async function isPortOpen(port) {
     return portscanner.checkPortStatus(port, 'localhost').then(status => status === 'open');
 }
 
 /**
  * Get Nexus authentication key from configuration
  */
-module.exports.getAuthKey = async function (key) {
+export async function getAuthKey(key) {
     let authToken = global.settings.value("config." + key);
     if (!authToken) {
         authToken = await this.getNPMConfigValue('txm-' + key);
@@ -75,12 +77,12 @@ module.exports.getAuthKey = async function (key) {
 /**
  * Create Base64 from inputted text.
  */
-module.exports.getBase64 = function (text) {
+export function getBase64(text) {
     if(!text) return;
     return new Buffer.from(text).toString('base64');
 }
 
-module.exports.determineServerPort = function (servers, type = 'txm') {
+export function determineServerPort(servers, type = 'txm') {
     let d = global.settings.value("defaults.server");
     for (let server of Object.values(servers)) {
         if (server.name.startsWith(d) && server.type == type) return server.port;
@@ -88,7 +90,7 @@ module.exports.determineServerPort = function (servers, type = 'txm') {
     return 8080;
 }
 
-module.exports.determineSandboxVersion = function (sbox) {
+export function determineSandboxVersion(sbox) {
     sbox = sbox || global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     if (!sbox) return null;
     let sandboxVersionFile = fs.readFileSync(sbox.path + "/version.txt");
@@ -96,14 +98,17 @@ module.exports.determineSandboxVersion = function (sbox) {
     return sandboxVersion;
 }
 
-module.exports.asyncPause = async function (timeout) {
+export async function asyncPause(timeout) {
     return new Promise(resolve => setTimeout(resolve, timeout));
 }
 
-module.exports.getNPMConfigValue = async function (key) {
+export async function getNPMConfigValue(key) {
     var win = process.platform === "win32";
-    const childProcess = spawn(win ? 'npm.cmd' : 'npm', ['config', 'get', key],
-        {stdio: ['ignore', 'pipe', 'pipe']});
+    const childProcess = cpr.spawn(win ? 'npm.cmd' : 'npm', ['config', 'get', key],
+        {
+            shell: true,
+            stdio: ['ignore', 'pipe', 'pipe']
+        });
 
     let result = "";
     childProcess.stdout.on('data', d => result += d);
@@ -117,24 +122,24 @@ module.exports.getNPMConfigValue = async function (key) {
     });
 }
 
-module.exports.pressEnter = async function () {
+export async function pressEnter() {
     return new Promise(resolve => process.stdin.once('data', () => resolve()));
 }
 
-module.exports.unjar = function (path) {
+export function unjar(path) {
     console.log("Exploding " + path);
     let tmpfile = path + ".extracting";
     fs.renameSync(path, tmpfile);
     var ear = new AdmZip(tmpfile);
     ear.extractAllTo(path, /*overwrite*/true);
-    module.exports.deltree(tmpfile);
+    deltree(tmpfile);
 }
 
-module.exports.deltree = function (path) {
-    del.sync([path], {force: true});
+export function deltree(path) {
+    deleteSync([path], {force: true});
 }
 
-module.exports.copytree = async function (source, dest) {
+export async function copytree(source, dest) {
     return new Promise((resolve, reject) => {
         ncp.ncp(source, dest, err => {
             if (err) return reject(err);

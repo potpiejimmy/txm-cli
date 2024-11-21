@@ -11,7 +11,7 @@ function usage() {
     process.exit();
 }
 
-function invoke(args) {
+export function invoke(args) {
 
     if (!args.length) usage();
 
@@ -51,5 +51,3 @@ function get(k) {
     if (!k) usage();
     console.log(global.settings.value("config."+k));
 }
-
-module.exports.invoke = invoke;

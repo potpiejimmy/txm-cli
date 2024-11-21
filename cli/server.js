@@ -1,10 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const fetch = require('node-fetch');
-const open = require('opn');
-const util = require('../utils/util');
-var Table = require('easy-table');
-const parseString = require('xml2js').parseString;
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
+import open from 'opn';
+import * as util from '../utils/util.js';
+import Table from 'easy-table';
+import { parseString } from 'xml2js';
 
 function usage() {
     console.log("Usage:  tm server <cmd>");
@@ -26,7 +26,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
 
     if (!args.length) usage();
 
@@ -221,7 +221,7 @@ async function del(name) {
     await list();
 }
 
-function indexToNameIfIndex(nameOrIndex) {
+export function indexToNameIfIndex(nameOrIndex) {
     let index;
     try { index = parseInt(nameOrIndex); } catch (e) {};
     // setting by index ?
@@ -254,7 +254,7 @@ async function def(name) {
     await list();
 }
 
-async function stop(name) {
+export async function stop(name) {
     let servers = global.settings.value("servers");
     if (!servers) return;
     if (name) {
@@ -471,7 +471,3 @@ async function openUrl(url, browser) {
     let cp = await open(url, {app: browser, wait: false});
     return new Promise(resolve => cp.on('close', resolve));
 }
-
-module.exports.invoke = invoke;
-module.exports.indexToNameIfIndex = indexToNameIfIndex;
-module.exports.stop = stop;

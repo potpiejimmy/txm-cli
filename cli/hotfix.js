@@ -1,8 +1,7 @@
-const util = require('../utils/util');
-const fs = require('fs');
-const path = require('path');
-const server = require('./server');
-const deploy = require('./deploy');
+import * as util from '../utils/util.js';
+import fs from 'fs';
+import * as server from './server.js';
+import * as deploy from './deploy.js';
 
 function usage() {
     console.log("Usage:  tm hotfix <module>");
@@ -16,7 +15,7 @@ function usage() {
     process.exit();
 }
 
-async function invoke(args) {
+export async function invoke(args) {
     
     if (args.length != 1) usage();
 
@@ -60,5 +59,3 @@ async function invoke(args) {
 
     await server.invoke(["start", defserver]);
 }
-
-module.exports.invoke = invoke;
