@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.24.0 (2025-01-13)
+
+
+### Features
+
+* add -DUelZiPMailHost parameter to jboss start ([a613fce](https://github.com/potpiejimmy/txm-cli/commit/a613fced0c3ce258992a789838d6f8d28ff15129))
+* added support for hotfixing non-ejb lib modules ([8b552a1](https://github.com/potpiejimmy/txm-cli/commit/8b552a1eac55eb5f0027f2c12c4c79778b8759eb))
+* added support to configure server start intial wait delay, default now 60 sec ([b5f80d4](https://github.com/potpiejimmy/txm-cli/commit/b5f80d4aaae1cc168c6141e5439f2546c2e22ab3))
+* colorized server status ([8ff4716](https://github.com/potpiejimmy/txm-cli/commit/8ff47164a7981db3892bc8b63f65c678301496f1))
+* merged branch (previous commit), upgraded libraries, security fixes ([c6f32c0](https://github.com/potpiejimmy/txm-cli/commit/c6f32c069b77e4bd33e1e1b02fea7508b2d6630c))
+* updated docs, (show server DB feature) ([68a34bf](https://github.com/potpiejimmy/txm-cli/commit/68a34bf43ec3393d22a996c8121f24d4e48d8a15))
+* updated README regarding new feature, use feat: conventional commit message so minor version is updated ([4e3b2ff](https://github.com/potpiejimmy/txm-cli/commit/4e3b2ff6b171cbea559d53129352d5fc5850190f))
+* upgraded all dependencies, converted to ES module ([65d7e6d](https://github.com/potpiejimmy/txm-cli/commit/65d7e6dd3798bd7aaeeed21fef59ac7568366e55))
+
+
+### Bug Fixes
+
+* also open KKO's login page, function chain log enhancements ([47d5dc3](https://github.com/potpiejimmy/txm-cli/commit/47d5dc349144cf87d09ccbf85b2a7dd51cd67e38))
+* better to use parseInt instead of relying on the subtraction operator ([257dbf1](https://github.com/potpiejimmy/txm-cli/commit/257dbf1e64dda93aa55ba7519fd22dc4bc4000b1))
+* catch exception on clipboard copy ([14027c8](https://github.com/potpiejimmy/txm-cli/commit/14027c809124a40c6cae2f7122743f8474b7901b))
+* create user for oracle ([10e19ad](https://github.com/potpiejimmy/txm-cli/commit/10e19ad42f7f7912ffaa022203fa470c3a5e4cda))
+
 ### [1.23.1](https://github.com/potpiejimmy/txm-cli/compare/v1.23.0...v1.23.1) (2024-11-21)
 
 ## [1.23.0](https://github.com/potpiejimmy/txm-cli/compare/v1.22.1...v1.23.0) (2024-11-21)
