@@ -10,6 +10,9 @@ function usage() {
     console.log("  applies the IDE-compiled classes from <module>/out/production/classes on top of");
     console.log("  it, restarts the server(s).");
     console.log();
+    console.log("  Note: You need to configure your Build Tools Gradle settings in the IDE to build using");
+    console.log("        'IntelliJ IDEA' instead of 'Gradle (default)'.");
+    console.log();
     console.log("  <module> specifies the Gradle subproject name, i.e. the JAR file base name.");
 
     process.exit();
@@ -23,6 +26,7 @@ export async function invoke(args) {
     let defserver = global.settings.value("defaults.server");
 
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
+    let sandboxVersion = util.determineSandboxVersion(sbox);
 
     await server.invoke(["stop", defserver]);
 
@@ -38,8 +42,10 @@ export async function invoke(args) {
             }
             let isWar = deploymentmodule.endsWith("-webapp");
             let isWf = deploymentmodule.endsWith("-wf");
-            let modulepath = deploy.getDeploymentPath(server) + '/' + deploymentmodule + (isWar ? '.war' : '.jar');
-            if (isWf) modulepath = deploy.getDeploymentPath(server) + '/ocm.war/WEB-INF/lib/' + deploymentmodule + '.jar';
+            let isNotEjb = !deploymentmodule.endsWith("-ejb");
+            let modulepath = deploy.getDeploymentPath(server) + '/' + deploymentmodule + (isWar ? '.war' : '.jar'); // EAR root folder
+            if (isNotEjb) modulepath = deploy.getDeploymentPath(server) + '/lib/' + deploymentmodule + '-' + sandboxVersion + '-SNAPSHOT.jar'; // EAR lib folder
+            if (isWf) modulepath = deploy.getDeploymentPath(server) + '/ocm.war/WEB-INF/lib/' + deploymentmodule + '.jar'; // OCM war lib folder
             if (fs.existsSync(modulepath)) {
                 if (fs.lstatSync(modulepath).isFile()) {
                     util.unjar(modulepath); // unjar if it exists as a file
