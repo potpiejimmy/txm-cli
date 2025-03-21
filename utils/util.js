@@ -4,6 +4,9 @@ import fs from 'fs';
 import { deleteSync } from 'del';
 import ncp from 'ncp';
 import AdmZip from 'adm-zip';
+import fetch from "node-fetch";
+import os from 'os';
+import dns from 'dns';
 
 /**
  * Executes a command with promise
@@ -146,4 +149,33 @@ export async function copytree(source, dest) {
             resolve();
         })
     });
+}
+
+export async function downloadFile(url, targetFile, fetchOptions) {
+    console.log("Downloading " + url + " to " + targetFile);
+    let start = new Date();
+    return fetch(url, fetchOptions).then(res => new Promise((resolve, reject) => {
+        const dest = fs.createWriteStream(targetFile);
+        res.body.pipe(dest);
+        dest.on('finish', () => {
+            let end = (new Date() - start) / 1000;
+            console.info('Execution time: %ds', end);
+            console.info("Path to the file: " + dest.path);
+            resolve();
+        });
+        dest.on('error', err => reject(err));
+    }));
+}
+
+export async function getFullyQualifiedHostName() {
+    let hostname = os.hostname();
+
+    let ipa = await new Promise((resolve,reject) => {
+        dns.lookup(hostname, (err, ia) => err ? reject(err) : resolve (ia));
+    });
+    let fqdn = await new Promise((resolve,reject) => {
+        dns.reverse(ipa, (err, dns) => err ? reject(err) : resolve (dns[0]));
+    });
+
+    return hostname + fqdn.substr(fqdn.indexOf("."));
 }

@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import clipboardy from "clipboardy";
 import xml2js from 'xml2js';
-import fs from 'fs';
 import * as util from '../utils/util.js';
 
 export async function invoke(args) {
@@ -29,28 +28,11 @@ function fixArguments(args) {
     return argsSorted;
 }
 
-async function downloadFile(url, name, authToken) {
-    console.log("Downloading " + url + " to " + name);
-    let start = new Date();
-    return fetch(url, {
-        headers: {Accept: "application/json", Authorization: "Basic " + util.getBase64(authToken)}
-    })
-        .then(res => new Promise((resolve, reject) => {
-            const dest = fs.createWriteStream(name);
-            res.body.pipe(dest);
-            dest.on('finish', () => {
-                let end = (new Date() - start) / 1000;
-                console.info('Execution time: %ds', end);
-                console.info("Path to the file: " + __dirname + "/../" + dest.path);
-                resolve();
-            });
-            dest.on('error', err => reject(err));
-        }));
-}
-
 async function download(url, args, authToken) {
     const finalFile = await askServer(url, args, authToken);
-    return downloadFile(url + "fi-asm-assembly-" + finalFile + ".zip", finalFile + ".zip", authToken)
+    return util.downloadFile(url + "fi-asm-assembly-" + finalFile + ".zip", finalFile + ".zip", {
+        headers: {Accept: "application/json", Authorization: "Basic " + util.getBase64(authToken)}
+    });
 }
 
 async function lastbn(args) {
