@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.25.0](https://github.com/potpiejimmy/txm-cli/compare/v1.24.0...v1.25.0) (2025-03-21)
+
+
+### Features
+
+* added new tm logs command ([fe6db80](https://github.com/potpiejimmy/txm-cli/commit/fe6db80a3fe32dff0ab4c01cbf574e251ab68fc1))
+
 ## 1.24.0 (2025-01-13)
 
 
