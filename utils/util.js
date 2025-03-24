@@ -173,9 +173,14 @@ export async function getFullyQualifiedHostName() {
     let ipa = await new Promise((resolve,reject) => {
         dns.lookup(hostname, (err, ia) => err ? reject(err) : resolve (ia));
     });
-    let fqdn = await new Promise((resolve,reject) => {
-        dns.reverse(ipa, (err, dns) => err ? reject(err) : resolve (dns[0]));
-    });
 
-    return hostname + fqdn.substr(fqdn.indexOf("."));
+    try {
+        let fqdn = await new Promise((resolve,reject) => {
+            dns.reverse(ipa, (err, dns) => err ? reject(err) : resolve (dns[0]));
+        });
+        return hostname + fqdn.substr(fqdn.indexOf("."));
+    } catch (ex) {
+        console.warn("Could not resolve domain name for " + hostname + "/" + ipa + ", using ad.diebold.com as a fallback.");
+        return hostname + ".ad.diebold.com";
+    }
 }
