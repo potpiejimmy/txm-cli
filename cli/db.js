@@ -184,6 +184,8 @@ quit;
 }
 
 async function fixOracleListener() {
-    await exexuteAsDBA(`startup;
+    var win = process.platform === "win32";
+    // connect as sysdba without SID!
+    await util.spawn(win ? "sqlplus.exe" : "sqlplus", ["/", "as", "sysdba"], null, `startup;
 quit;`);
 }
