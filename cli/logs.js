@@ -60,5 +60,6 @@ export async function invoke(args) {
     
     }
 
+    console.log("Starting " + logExpertExe);
     await util.spawnDetached(win ? logExpertExe : "tail", relevantLogFiles, ".");
 }

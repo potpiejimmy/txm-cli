@@ -14,6 +14,7 @@ function usage() {
     console.log("       create                   (re)creates the FI database DDLs & DMLs (runs createDb.sh).");
     console.log("       norops                   disables ROPS (executes disable-rops.sql).");
     console.log("       devinit                  initializes dev system (executes devsystem_init.sql).");
+    console.log("       fix                      fixes Oracle connection problem by running 'startup' as sysdba.");
     console.log();
     showCurrentSettings();
     
@@ -30,6 +31,7 @@ export async function invoke(args) {
     else if ("create".startsWith(cmd)) await createDB();
     else if ("norops".startsWith(cmd)) await executeSQL("disable-rops.sql");
     else if ("devinit".startsWith(cmd)) await executeSQL("devsystem_init.sql");
+    else if ("fix".startsWith(cmd)) await fixOracleListener();
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -179,4 +181,9 @@ quit;
 `
     sql = sql.replace(/\$user/g, user).replace(/\$password/g, pw);
     await exexuteAsDBA(sql);
+}
+
+async function fixOracleListener() {
+    await exexuteAsDBA(`startup;
+quit;`);
 }
