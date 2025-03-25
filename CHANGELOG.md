@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.26.0](https://github.com/potpiejimmy/txm-cli/compare/v1.25.1...v1.26.0) (2025-03-25)
+
+
+### Features
+
+* added tm db fix command ([cdd9adb](https://github.com/potpiejimmy/txm-cli/commit/cdd9adb7211f04fd7a01fb73a9575f5d79af740d))
+
 ### [1.25.1](https://github.com/potpiejimmy/txm-cli/compare/v1.25.0...v1.25.1) (2025-03-24)
 
 ## [1.25.0](https://github.com/potpiejimmy/txm-cli/compare/v1.24.0...v1.25.0) (2025-03-21)
