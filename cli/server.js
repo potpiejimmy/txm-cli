@@ -345,6 +345,11 @@ async function login(name, option, browser, isPrincipal) {
         name = null;
     }
 
+    console.log("Note: You may configure your default browser for opening URLs like this: 'tm c set DefaultBrowser firefox'");
+    if (!browser) {
+        browser = global.settings.value("config.DefaultBrowser");
+    }
+
     let servers = global.settings.value("servers");
     if (!servers) return;
     if (name) {
