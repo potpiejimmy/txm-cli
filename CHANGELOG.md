@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.27.0](https://github.com/potpiejimmy/txm-cli/compare/v1.26.2...v1.27.0) (2025-03-31)
+
+
+### Features
+
+* added support for setting default browser ([a15ad7b](https://github.com/potpiejimmy/txm-cli/commit/a15ad7b7acc1a412c2264525829dba18372f37c3))
+
 ### [1.26.2](https://github.com/potpiejimmy/txm-cli/compare/v1.26.1...v1.26.2) (2025-03-25)
 
 ### [1.26.1](https://github.com/potpiejimmy/txm-cli/compare/v1.26.0...v1.26.1) (2025-03-25)
