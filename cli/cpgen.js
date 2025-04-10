@@ -35,7 +35,7 @@ export async function invoke(args) {
     } else if (args[0] === '2') {
         copyCpgFile("/fi-servicestation-client/cpgenfiles/testfiles_daten.neu/kko", "R3769_rechts.cpg");
     } else {
-        for (f of args) copyCpgFileAbsolute(f);
+        for (let f of args) copyCpgFileAbsolute(f);
     }
 
     // wait for import to be finished
