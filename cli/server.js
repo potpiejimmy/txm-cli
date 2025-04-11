@@ -18,10 +18,10 @@ function usage() {
     console.log("                                                   multiple servers or a specific index no.");
     console.log("       del <name>                                  delete a server.");
     console.log("       stop [<name pref./no.>] [--<option>]        stops all running servers or the specified ones.");
-    console.log("                                                   --<option> is passed to the server script, e.g. --force");
+    console.log("                                                   --<option> is passed to the WLP server script, e.g. --force");
     console.log("       start [<name pref./no.>] [-o] [--<option>]  (re)starts the default servers or the specified ones,");
     console.log("                                                   add option '-o' to open login URL after startup.");
-    console.log("                                                   --<option> is passed to the server script, e.g. --clean");
+    console.log("                                                   --<option> is passed to the WLP server script, e.g. --clean");
     console.log("                                                   Tip: Use --clean to cleanup Liberty cache on startup.");
     console.log("       login [<name pref./no.>] [-b browser]       opens the default or specified servers' admin login page(s).");
     console.log("       principal [<name pref./no.>] [-b browser]   opens the default or specified servers' principal login page(s).");
