@@ -17,9 +17,12 @@ function usage() {
     console.log("                                                   prefix to multiple server names to target");
     console.log("                                                   multiple servers or a specific index no.");
     console.log("       del <name>                                  delete a server.");
-    console.log("       stop [<name pref./no.>]                     stops all running servers or the specified ones.");
-    console.log("       start [<name pref./no.>] [-o]               (re)starts the default servers or the specified ones,");
+    console.log("       stop [<name pref./no.>] [--<option>]        stops all running servers or the specified ones.");
+    console.log("                                                   --<option> is passed to the server script, e.g. --force");
+    console.log("       start [<name pref./no.>] [-o] [--<option>]  (re)starts the default servers or the specified ones,");
     console.log("                                                   add option '-o' to open login URL after startup.");
+    console.log("                                                   --<option> is passed to the server script, e.g. --clean");
+    console.log("                                                   Tip: Use --clean to cleanup Liberty cache on startup.");
     console.log("       login [<name pref./no.>] [-b browser]       opens the default or specified servers' admin login page(s).");
     console.log("       principal [<name pref./no.>] [-b browser]   opens the default or specified servers' principal login page(s).");
 
@@ -35,8 +38,8 @@ export async function invoke(args) {
     else if ("set".startsWith(cmd)) await set(args[1], args[2], args[3]);
     else if ("default".startsWith(cmd)) await def(args[1]);
     else if ("del".startsWith(cmd)) await del(args[1]);
-    else if ("stop".startsWith(cmd)) await stop(args[1]);
-    else if ("start".startsWith(cmd)) await start(args[1], args[2]);
+    else if ("stop".startsWith(cmd)) await stop(args[1], args[2]);
+    else if ("start".startsWith(cmd)) await start(args[1], args[2], args[3]);
     else if ("login".startsWith(cmd)) await login(args[1], args[2], args[3], false);
     else if ("principal".startsWith(cmd)) await login(args[1], args[2], args[3], true);
     else {
@@ -254,9 +257,14 @@ async function def(name) {
     await list();
 }
 
-export async function stop(name) {
+export async function stop(name, serverOption) {
     let servers = global.settings.value("servers");
     if (!servers) return;
+    if (name && name.startsWith('--')) {
+        /* no name specified, but serverOption present */
+        serverOption = name;
+        name = null;
+    }
     if (name) {
         name = indexToNameIfIndex(name);
         if (!name) return;
@@ -266,13 +274,13 @@ export async function stop(name) {
         if (!name || server.name.startsWith(name)) {
             if (await util.isPortOpen(server.port)) {
                 let nativeServerName = path.basename(server.path);
-                console.log("Stopping server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
+                console.log("Stopping server '" + server.name + "' [" + nativeServerName + "] at " + server.path + (serverOption ? " with option " + serverOption : ""));
                 var win = process.platform === "win32";
                 if (server.serverType == "jboss") {
                     stoppedAJboss = true;
                     await util.spawn(win ? "jboss-cli.bat" : "./jboss-cli.sh", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin", "\n");
                 } else if (server.serverType == "wlp") {
-                    await util.spawn(win ? "server.bat" : "./server", ["stop", nativeServerName], server.path + "/../../../bin");
+                    await util.spawn(win ? "server.bat" : "./server", ["stop", nativeServerName, serverOption], server.path + "/../../../bin");
                 }
             } else {
                 console.log("Server '" + server.name + "' is not running.");
@@ -285,10 +293,22 @@ export async function stop(name) {
     }
 }
 
-async function start(name, option) {
+async function start(name, option, serverOption) {
     if (name == '-o') {
         /* no name specified, but option -o present */
+        serverOption = option;
         option = name;
+        name = null;
+    }
+    if (option && option.startsWith('--')) {
+        /* name specified, option -o not present, but server option present */
+        serverOption = option;
+        option = null;
+    }
+    if (name && name.startsWith('--')) {
+        /* no name specified, option -o not present, but server option present */
+        serverOption = name;
+        option = null;
         name = null;
     }
     let servers = global.settings.value("servers");
@@ -311,12 +331,12 @@ async function start(name, option) {
         if (server.name.startsWith(d)) {
             if (!await util.isPortOpen(server.port)) {
                 let nativeServerName = path.basename(server.path);
-                console.log("Starting server '" + server.name + "' [" + nativeServerName + "] at " + server.path);
+                console.log("Starting server '" + server.name + "' [" + nativeServerName + "] at " + server.path + (serverOption ? " with option " + serverOption : ""));
                 var win = process.platform === "win32";
                 if (server.serverType == "jboss") {
                     await startJBoss(server);
                 } else if (server.serverType == "wlp") {
-                    await util.spawn(win ? "server.bat" : "./server", ["start", nativeServerName], server.path + "/../../../bin");
+                    await util.spawn(win ? "server.bat" : "./server", ["start", nativeServerName, serverOption], server.path + "/../../../bin");
                 }
             } else {
                 console.log("Server '" + server.name + "' is already running.");
