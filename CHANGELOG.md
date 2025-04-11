@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.28.0](https://github.com/potpiejimmy/txm-cli/compare/v1.27.1...v1.28.0) (2025-04-11)
+
+
+### Features
+
+* allow specifying --options for liberty start and stop with tm server start and stop ([8f497a1](https://github.com/potpiejimmy/txm-cli/commit/8f497a1e211d79009ec8d2a407fa8b1e153d1b6d))
+
 ### [1.27.1](https://github.com/potpiejimmy/txm-cli/compare/v1.27.0...v1.27.1) (2025-04-10)
 
 ## [1.27.0](https://github.com/potpiejimmy/txm-cli/compare/v1.26.2...v1.27.0) (2025-03-31)
