@@ -17,7 +17,26 @@ export async function invoke(args) {
     let chameleonpath = sbox.path + "\\runtime\\chameleon";
     let gwpath = sbox.path + "\\runtime\\fi-pbmc-fcgateway";
     let simpath = sbox.path + "\\runtime\\pbm-simclient";
+
+    const GW_PORT = 9001;
+
+    // if FC Gateway not running already, start it up along with the Chameleons in a shared terminal window with tabs.
+    if (!(await util.isPortOpen(GW_PORT))) {
+        console.log("Starting Gateway and Chameleons");
+        let cmdLine = "wt";
+        cmdLine += " new-tab -d \"" + gwpath + "\\bin\" \"" + gwpath + "\\bin\\startFCGateway.cmd\"";
+        cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K1.cmd\"";
+        cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K19.cmd\"";
+        cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K14.cmd\"";
+        cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\T2.cmd\"";
+        cmdLine += " ; new-tab -d \"" + simpath + "\\bin\" cmd.exe";
+        //console.log(cmdLine);
+        await util.exec(cmdLine);
+        await util.asyncPause(5000);
+    }
+
     let exeargs = [chameleonpath, gwpath, simpath, sbox.path, util.determineServerPort(servers), "false"];
     console.log(exeargs);
+
     util.spawnDetached(executable, exeargs, execpath);
 }
