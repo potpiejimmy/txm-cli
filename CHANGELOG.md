@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.29.0](https://github.com/potpiejimmy/txm-cli/compare/v1.28.1...v1.29.0) (2025-04-13)
+
+
+### Features
+
+* open FC gateway and all chameleons and a cmd line in a single terminal windows on tm sim ([8313a6b](https://github.com/potpiejimmy/txm-cli/commit/8313a6bcedeb6a40e369f640c5e0b1979880feed))
+
 ### [1.28.1](https://github.com/potpiejimmy/txm-cli/compare/v1.28.0...v1.28.1) (2025-04-11)
 
 ## [1.28.0](https://github.com/potpiejimmy/txm-cli/compare/v1.27.1...v1.28.0) (2025-04-11)
