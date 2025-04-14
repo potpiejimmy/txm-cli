@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.29.3](https://github.com/potpiejimmy/txm-cli/compare/v1.29.2...v1.29.3) (2025-04-14)
+
+
+### Bug Fixes
+
+* setting FC gateway port tm sim ([10b27de](https://github.com/potpiejimmy/txm-cli/commit/10b27deaef3b822ff27886c3ae9c2248896d6f1c))
+
 ### [1.29.2](https://github.com/potpiejimmy/txm-cli/compare/v1.29.1...v1.29.2) (2025-04-14)
 
 ### [1.29.1](https://github.com/potpiejimmy/txm-cli/compare/v1.29.0...v1.29.1) (2025-04-14)
