@@ -14,7 +14,7 @@ import dns from 'dns';
 export async function exec(cmdline, cwd) {
     return new Promise((resolve, reject) => {
         cpr.exec(cmdline, {cwd: cwd}, err => {
-            if (err) reject();
+            if (err) reject(err);
             else resolve();
         });
     });
