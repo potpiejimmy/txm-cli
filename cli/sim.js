@@ -28,7 +28,7 @@ export async function invoke(args) {
             let servers = global.settings.value("servers");
             let cfgFile = gwpath + "/config/PCEFIFCGateway.xml";
             let cfg = fs.readFileSync(cfgFile);
-            cfg = cfg.toString().replace(/<sectionEntry name="ServerUrl">http:\/\/localhost:\d+<\/sectionEntry>/m, "<sectionEntry name=\"ServerUrl\">http://localhost:" + util.determineServerPort(servers) + "</sectionEntry>");
+            cfg = cfg.toString().replace(/(<sectionEntry name="ServerUrl">http:\/\/localhost:)(\d+)(<\/sectionEntry>)/m, "$1" + util.determineServerPort(servers) + "$3");
             fs.writeFileSync(cfgFile, cfg);
 
             console.log("Starting Gateway and Chameleons terminal window.");
