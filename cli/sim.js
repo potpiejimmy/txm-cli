@@ -23,7 +23,7 @@ export async function invoke(args) {
     // if FC Gateway not running already, start it up along with the Chameleons in a shared terminal window with tabs.
     if (!(await util.isPortOpen(GW_PORT))) {
         try {
-            console.log("Starting Gateway and Chameleons terminal window...");
+            console.log("Starting Gateway and Chameleons terminal window.");
             let cmdLine = "wt";
             cmdLine += " new-tab -d \"" + gwpath + "\\bin\" \"" + gwpath + "\\bin\\startFCGateway.cmd\"";
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K1.cmd\"";
@@ -33,12 +33,15 @@ export async function invoke(args) {
             cmdLine += " ; new-tab -d \"" + simpath + "\\bin\" cmd.exe";
             //console.log(cmdLine);
             await util.exec(cmdLine);
-            await util.asyncPause(5000);
+            // wait for FC Gateway
+            console.log("Waiting for FC Gateway to be ready...");
+            while (!await util.isPortOpen(GW_PORT)) await util.asyncPause(500);
         } catch (err) {
             console.error("Could not start terminal window: " + err);
         }
     }
 
+    console.log("Starting SIPbmSimulatorConfigurator.exe");
     let exeargs = [chameleonpath, gwpath, simpath, sbox.path, util.determineServerPort(servers), "false"];
     console.log(exeargs);
 
