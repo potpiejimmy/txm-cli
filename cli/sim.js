@@ -23,6 +23,14 @@ export async function invoke(args) {
     // if FC Gateway not running already, start it up along with the Chameleons in a shared terminal window with tabs.
     if (!(await util.isPortOpen(GW_PORT))) {
         try {
+
+            // configure FC Gateway port
+            let servers = global.settings.value("servers");
+            let cfgFile = gwpath + "/config/PCEFIFCGateway.xml";
+            let cfg = fs.readFileSync(cfgFile);
+            cfg = cfg.toString().replace(/<sectionEntry name="ServerUrl">http:\/\/localhost:\d+<\/sectionEntry>/m, "<sectionEntry name=\"ServerUrl\">http://localhost:" + util.determineServerPort(servers) + "</sectionEntry>");
+            fs.writeFileSync(cfgFile, cfg);
+
             console.log("Starting Gateway and Chameleons terminal window.");
             let cmdLine = "wt";
             cmdLine += " new-tab -d \"" + gwpath + "\\bin\" \"" + gwpath + "\\bin\\startFCGateway.cmd\"";
