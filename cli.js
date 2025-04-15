@@ -30,9 +30,8 @@ function usage() {
     console.log("                              if <r> is omitted, the current sandbox version is used,");
     console.log("                              <b> is required branch. If ommited, master will be used");
     console.log("                              specify option 'd' to download the artifact from Nexus.");
-    console.log("       latestb <b> <d> <v>    displays latest product build number")
-    console.log("                              more info in command usage ;)")
-    console.log("       changelog <b> <d> <v>  shows you all the changelog entries for");
+    console.log("       latestb                displays latest product build number.")
+    console.log("       changelog              shows you all the changelog entries for");
     console.log("                              your selected branch, artifact and version.")
     console.log("       dump                   dump all current settings as JSON.");
 	console.log("       ctv                    run commtraceviewer.");

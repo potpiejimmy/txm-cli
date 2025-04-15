@@ -36,9 +36,8 @@ The command line tool offers various subcommands that can be displayed by just e
                               with <r> being the desired version (e.g. '19.0.00'),
                               if <r> is omitted, the current sandbox version is used,
                               specify option 'd' to download the artifact from Nexus.
-       latestb <b> <d> <v>    displays latest product build number with changelog
-                              more info in command usage ;)
-       changelog <b> <d> <v>  shows you all the changelog entries for
+       latestb                displays latest product build number.
+       changelog              shows you all the changelog entries for
                               your selected branch, artifact and version.
        dump                   dump all current settings as JSON.
        ctv                    run commtraceviewer.
