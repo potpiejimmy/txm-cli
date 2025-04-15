@@ -2,13 +2,13 @@ import fetch from "node-fetch";
 import * as util from '../utils/util.js';
 
 function usage() {
-    console.log("Usage:  tm changelog <br> <dep> <ver>");
+    console.log("Usage:  tm changelog <b> <d> <v>");
     console.log();
     console.log("  Tells you changelog for a artifact on your chosen branch and version.");
     console.log();
-    console.log("  <br> stands for the selected release branch. public (stable) or snapshot (development)");
-    console.log("  <dep> here you can specify your requested dependency. Keep this form: groupId/artifactId")
-    console.log("  <ver> has to be exact version. For example: 2.3.0-Build.1337 - Please keep this in mind.")
+    console.log("  <b> stands for the selected release branch. public (stable) or snapshot (development)");
+    console.log("  <d> here you can specify your requested dependency. Keep this form: groupId/artifactId")
+    console.log("  <v> has to be exact version. For example: 2.3.0-Build.1337 - Please keep this in mind.")
 
     process.exit();
 }
