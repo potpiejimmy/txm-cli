@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.30.0](https://github.com/potpiejimmy/txm-cli/compare/v1.29.4...v1.30.0) (2025-04-15)
+
+
+### Features
+
+* removed obsolete tm all and tm autotest ([ab3027c](https://github.com/potpiejimmy/txm-cli/commit/ab3027c29b781ceeb1351f597a9f725d67adde4f))
+
 ### [1.29.4](https://github.com/potpiejimmy/txm-cli/compare/v1.29.3...v1.29.4) (2025-04-14)
 
 ### [1.29.3](https://github.com/potpiejimmy/txm-cli/compare/v1.29.2...v1.29.3) (2025-04-14)
