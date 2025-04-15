@@ -2,7 +2,7 @@
 import settings from "settings-store";
 import * as db from './cli/db.js';
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build", "changelog","rebuild","hotfix","db","cpgen","all","func","sim","ropssim","lastbn","latestbuild","autotest","dump", "ctv","logs"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build", "changelog","rebuild","hotfix","db","cpgen","func","sim","ropssim","lastbn","latestbuild","dump", "ctv","logs"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -21,7 +21,6 @@ function usage() {
     console.log("       hotfix         apply hotfix from IDE to deployed server(s).");
     console.log("       db             manage your databases.");
     console.log("       cpgen          perform CPGEN imports of cpg files.");
-    console.log("       all            do everything, clean rebuild, createDB and deploy.");
     console.log("       func           manage custom function chains.");
     console.log("       sim            configure and run the PBM simulator GUI.");
     console.log("       ropssim [ui]   configure and run ROPS gateway and ROPS cmd client,");
@@ -35,7 +34,6 @@ function usage() {
     console.log("                      more info in command usage ;)")
     console.log("       changelog <branch> <dep> <ver> shows you all the changelog entries for");
     console.log("                      your selected branch, artifact and version.")
-    console.log("       autotest       run the automated test suite (Automatiktest).");
     console.log("       dump           dump all current settings as JSON.");
 	console.log("       ctv            run commtraceviewer.");
 	console.log("       logs           opens all relevant log files in LogExpert (win) or tail (ux).");

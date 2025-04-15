@@ -28,7 +28,6 @@ The command line tool offers various subcommands that can be displayed by just e
        hotfix         apply hotfix from IDE to deployed server(s).
        db             manage your databases.
        cpgen          perform CPGEN imports of cpg files.
-       all            do everything, clean rebuild, createDB and deploy.
        func           manage custom function chains.
        sim            configure and run the PBM simulator GUI.
        ropssim [ui]   configure and run ROPS gateway and ROPS cmd client,
@@ -41,7 +40,6 @@ The command line tool offers various subcommands that can be displayed by just e
                       more info in command usage ;)
        changelog <branch> <dep> <ver> shows you all the changelog entries for
                       your selected branch, artifact and version.
-       autotest       run the automated test suite (Automatiktest).
        dump           dump all current settings as JSON.
        ctv            run commtraceviewer.
        logs           opens all relevant log files in LogExpert (win) or tail (ux).

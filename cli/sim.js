@@ -25,7 +25,6 @@ export async function invoke(args) {
         try {
 
             // configure FC Gateway port
-            let servers = global.settings.value("servers");
             let cfgFile = gwpath + "/config/PCEFIFCGateway.xml";
             let cfg = fs.readFileSync(cfgFile);
             cfg = cfg.toString().replace(/(<sectionEntry name="ServerUrl">http:\/\/localhost:)(\d+)(<\/sectionEntry>)/m, "$1" + util.determineServerPort(servers) + "$3");
