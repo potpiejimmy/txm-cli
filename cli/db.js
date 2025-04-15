@@ -47,8 +47,12 @@ function showCurrentSettings() {
 }
 
 export function getDBConnectionString() {
-    let dbprops = propreader(getGradlePropertiesFile());
-    return dbprops.get("dbUser") + "/" + dbprops.get("dbPW") + "@"+getSID();
+    try {
+        let dbprops = propreader(getGradlePropertiesFile());
+        return dbprops.get("dbUser") + "/" + dbprops.get("dbPW") + "@"+getSID();
+    } catch(err) {
+        return err.toString();
+    }
 }
 
 function getSID() {
