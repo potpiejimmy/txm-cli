@@ -49,10 +49,15 @@ function showCurrentSettings() {
 export function getDBConnectionString() {
     try {
         let dbprops = propreader(getGradlePropertiesFile());
-        return dbprops.get("dbUser") + "/" + dbprops.get("dbPW") + "@"+getSID();
+        return getDbUser() + "/" + dbprops.get("dbPW") + "@"+getDbConnectionFromGradle()+"/"+getSID();
     } catch(err) {
         return err.toString();
     }
+}
+
+function getDbUser(){
+    let dbprops = propreader(getGradlePropertiesFile());
+    return dbprops.get("dbUser");
 }
 
 function getSID() {
@@ -67,6 +72,21 @@ function getSID() {
     }
 
     return sid.toUpperCase();
+}
+
+function getDbConnectionFromGradle(){
+    let dbprops = propreader(getGradlePropertiesFile());
+    let dbConn = dbprops.get("dbConnection");
+    let dbPort = dbprops.get("dbPort");
+    if (!dbConn) {
+        console.log("No dbConnection found in gradle.properties. Using default: 127.0.0.1");
+        dbConn = "127.0.0.1";
+    }
+    if(!dbPort){
+        console.log("No dbPort found in gradle.properties. Using default: 1521");
+        dbPort = "1521";
+    }
+    return dbConn+":"+dbPort;
 }
 
 function convertSidToGradleDbName(sid) {
@@ -120,7 +140,12 @@ async function executeSQL(script) {
 
 async function exexuteAsDBA(sql) {
     var win = process.platform === "win32";
-    await util.spawn(win ? "sqlplus.exe" : "sqlplus", ["/@"+getSID(), "as", "sysdba"], null, sql);
+    let connString = "/@"+getSID();
+    if(getDbUser().toLowerCase() === "sys"){
+        connString = getDBConnectionString();
+    }
+    await util.spawn(win ? "sqlplus.exe" : "sqlplus",
+        [connString, "as", "sysdba"], null, sql);
 }
 
 async function initDBMS() {
