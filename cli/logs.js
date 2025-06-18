@@ -53,8 +53,10 @@ export async function invoke(args) {
                 let serverName = path.basename(server.path);
                 let serverLogDir = server.path + "/logs/";
                 relevantLogFiles.push(serverLogDir + "messages.log");
-                relevantLogFiles.push(serverLogDir + "PCELog-" + serverName + fqdn + ".prn");
-                relevantLogFiles.push(serverLogDir + "CommTrace-" + serverName + fqdn + ".ctr");
+                if (server.type !== 'kko') {
+                    relevantLogFiles.push(serverLogDir + "PCELog-" + serverName + fqdn + ".prn");
+                    relevantLogFiles.push(serverLogDir + "CommTrace-" + serverName + fqdn + ".ctr");
+                }
             }
         }
     
