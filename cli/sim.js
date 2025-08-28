@@ -36,6 +36,7 @@ export async function invoke(args) {
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K1.cmd\"";
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K19.cmd\"";
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K14.cmd\"";
+            cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K24.cmd\"";
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\T2.cmd\"";
             cmdLine += " ; new-tab -d \"" + simpath + "\\bin\" cmd.exe";
             //console.log(cmdLine);
