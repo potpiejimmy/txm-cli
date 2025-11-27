@@ -63,11 +63,13 @@ async function deployServer(sbox, server) {
     if (server.type !== 'rops') {
         // for txm and kko servers, explode the ear, war and FI fragment:
         util.unjar(path);
-        if(fs.existsSync(path + "/ocm.war")) path += "/ocm.war";
+        if (fs.existsSync(path + "/ocm.war")) path += "/ocm.war";
         else path += "/server.war"
         util.unjar(path);
         path += "/WEB-INF/lib/fi-ocm-wf.jar";
-        util.unjar(path);
+        if (fs.existsSync(path)) {
+            util.unjar(path);
+        }
     }
 
     if (server.serverType === 'jboss' && server.type === 'txm') {
