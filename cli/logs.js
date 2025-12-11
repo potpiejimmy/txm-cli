@@ -1,7 +1,11 @@
 import fs from 'fs';
-import path from 'path';
 import * as util from '../utils/util.js';
 import AdmZip from 'adm-zip';
+
+function addTMLogFile(logDir, prefix, suffix, logFiles) {
+    let foundFile = fs.readdirSync(logDir).find(file => file.startsWith(prefix) && file.endsWith(suffix));
+    if (foundFile) logFiles.push(logDir + foundFile);
+}
 
 export async function invoke(args) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
@@ -43,19 +47,19 @@ export async function invoke(args) {
     ]
 
     let defsrv = global.settings.value("defaults.server");
-    let fqdn = await util.getFullyQualifiedHostName();
    
     if (defsrv) {
         let servers = global.settings.value("servers");
         for (let server of Object.values(servers)) {
             if (server.name.startsWith(defsrv)) {
                 console.log("Adding logs for server " + server.path);
-                let serverName = path.basename(server.path);
                 let serverLogDir = server.path + "/logs/";
                 relevantLogFiles.push(serverLogDir + "messages.log");
                 if (server.type !== 'kko') {
-                    relevantLogFiles.push(serverLogDir + "PCELog-" + serverName + fqdn + ".prn");
-                    relevantLogFiles.push(serverLogDir + "CommTrace-" + serverName + fqdn + ".ctr");
+                    if (fs.existsSync(serverLogDir)) {
+                        addTMLogFile(serverLogDir, "PCELog-", ".prn", relevantLogFiles);
+                        addTMLogFile(serverLogDir, "CommTrace-", ".ctr", relevantLogFiles);
+                    }
                 }
             }
         }
