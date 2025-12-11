@@ -35,7 +35,7 @@ export async function invoke(args) {
             console.log("Unzipping " + installerZip);
             new AdmZip(installerZip).extractAllTo(logExpertDir, /*overwrite*/true);
 
-            console.log("LogExport successfully installed in " + logExpertDir);
+            console.log("LogExpert successfully installed in " + logExpertDir);
         } else {
             console.log("LogExpert is already installed in " + logExpertDir);
         }
