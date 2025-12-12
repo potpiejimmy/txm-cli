@@ -59,6 +59,8 @@ export async function invoke(args) {
                     if (fs.existsSync(serverLogDir)) {
                         addTMLogFile(serverLogDir, "PCELog-", ".prn", relevantLogFiles);
                         addTMLogFile(serverLogDir, "CommTrace-", ".ctr", relevantLogFiles);
+                        addTMLogFile(serverLogDir, "PCECommtrace-", ".ctr", relevantLogFiles);
+                        addTMLogFile(serverLogDir, "ServiceLog-", ".json", relevantLogFiles);
                     }
                 }
             }
