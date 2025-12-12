@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.31.8](https://github.com/potpiejimmy/txm-cli/compare/v1.31.7...v1.31.8) (2025-12-12)
+
 ### [1.31.7](https://github.com/potpiejimmy/txm-cli/compare/v1.31.6...v1.31.7) (2025-12-11)
 
 ### [1.31.6](https://github.com/potpiejimmy/txm-cli/compare/v1.31.5...v1.31.6) (2025-11-27)
