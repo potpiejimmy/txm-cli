@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
-import open from 'opn';
 import * as util from '../utils/util.js';
 import Table from 'easy-table';
 import { parseString } from 'xml2js';
@@ -484,15 +483,9 @@ async function waitForServerReady(server) {
 }
 
 async function openLogin(server, browser) {
-    return openUrl("http://localhost:"+server.port+"/webadm", browser);
+    return util.openUrl("http://localhost:"+server.port+"/webadm", browser);
 }
 
 async function openPrincipalLogin(server, browser) {
-    return openUrl("http://localhost:"+server.port+"/webadm/pages/Principal.xhtml?inr=421&vrz=IKS01", browser);
-}
-
-async function openUrl(url, browser) {
-    console.log("Opening " + url + (browser ? (" in " + browser) : ""));
-    let cp = await open(url, {app: browser, wait: false});
-    return new Promise(resolve => cp.on('close', resolve));
+    return util.openUrl("http://localhost:"+server.port+"/webadm/pages/Principal.xhtml?inr=421&vrz=IKS01", browser);
 }

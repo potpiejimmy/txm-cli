@@ -7,6 +7,7 @@ import AdmZip from 'adm-zip';
 import fetch from "node-fetch";
 import os from 'os';
 import dns from 'dns';
+import open from 'opn';
 
 /**
  * Executes a command with promise
@@ -183,4 +184,10 @@ export async function getFullyQualifiedHostName() {
         console.warn("Could not resolve domain name for " + hostname + "/" + ipa + ", using ad.diebold.com as a fallback.");
         return hostname + ".ad.diebold.com";
     }
+}
+
+export async function openUrl(url, browser) {
+    console.log("Opening " + url + (browser ? (" in " + browser) : ""));
+    let cp = await open(url, {app: browser, wait: false});
+    return new Promise(resolve => cp.on('close', resolve));
 }

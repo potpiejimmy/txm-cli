@@ -29,7 +29,7 @@ export async function invoke(args) {
             console.log("LogExpert is not installed in " + logExpertDir);
 
             if (!fs.existsSync(logExpertDir)) fs.mkdirSync(logExpertDir);
-            let installerZip = logExpertDir + "\\" + downloadFileName;
+            let installerZip = logExpertDir + downloadFileName;
             await util.downloadFile(downloadUrl, installerZip);
 
             console.log("Unzipping " + installerZip);

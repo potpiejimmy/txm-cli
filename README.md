@@ -16,31 +16,33 @@ The command line tool offers various subcommands that can be displayed by just e
      
     with <cmd> being one of
  
-       version                display version info.
-       update                 update CLI to most recent version.
-       server                 manage your servers.
-       sandbox                manage your sandboxes.
-       config                 manage general configuration settings.
-       deploy                 deploy and explode EARs from the current default sandbox
-                              to the current default server(s).
-       build                  do a gradlew build without recreating runtime folder.
-       rebuild                do a clean build with new runtime folder.
-       hotfix                 apply hotfix from IDE to deployed server(s).
-       db                     manage your databases.
-       cpgen                  perform CPGEN imports of cpg files.
-       func                   manage custom function chains.
-       sim                    configure and run the PBM simulator GUI.
-       ropssim [ui]           configure and run ROPS gateway and ROPS cmd client,
-                              specify option 'ui' to start the GUI version.
-       lastb [<r> [<b> [d]]]  display last build number (and copy to clipboard),
-                              with <r> being the desired version (e.g. '19.0.00'),
-                              if <r> is omitted, the current sandbox version is used,
-                              specify option 'd' to download the artifact from Nexus.
-       latestb                displays latest product build number.
-       changelog              shows you all the changelog entries for
-                              your selected branch, artifact and version.
-       dump                   dump all current settings as JSON.
-       ctv                    run commtraceviewer.
-       logs                   opens all relevant log files in LogExpert (win) or tail (ux).
+        version                display version info.
+        update                 update CLI to most recent version.
+        server                 manage your servers.
+        sandbox                manage your sandboxes.
+        config                 manage general configuration settings.
+        deploy                 deploy and explode EARs from the current default sandbox
+                                to the current default server(s).
+        build                  do a gradlew build without recreating runtime folder.
+        rebuild                do a clean build with new runtime folder.
+        hotfix                 apply hotfix from IDE to deployed server(s).
+        db                     manage your databases.
+        cpgen                  perform CPGEN imports of cpg files.
+        func                   manage custom function chains.
+        sim                    configure and run the PBM simulator GUI.
+        ropssim [ui]           configure and run ROPS gateway and ROPS cmd client,
+                                specify option 'ui' to start the GUI version.
+        lastb [<r> [<b> [d]]]  display last build number (and copy to clipboard),
+                                with <r> being the desired version (e.g. '19.0.00'),
+                                if <r> is omitted, the current sandbox version is used,
+                                <b> is required branch. If ommited, master will be used
+                                specify option 'd' to download the artifact from Nexus.
+        latestb                displays latest product build number.
+        changelog              shows you all the changelog entries for
+                                your selected branch, artifact and version.
+        dump                   dump all current settings as JSON.
+        ctv                    run commtraceviewer.
+        logs                   opens all relevant log files in LogExpert (win) or tail (ux).
+        iso                    opens ISO message parser and builder.
        
 All commands can be abbreviated as you like - the first matching command will be executed. For instance, "tm deploy" can be written as "tm d", "tm update" as "tm u" and "tm server list" can be abbreviated as "tm s l" and so on.

@@ -2,7 +2,7 @@
 import settings from "settings-store";
 import * as db from './cli/db.js';
 
-const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build", "changelog","rebuild","hotfix","db","cpgen","func","sim","ropssim","lastb","latestb","dump", "ctv","logs"];
+const KNOWN_COMMANDS = ["version","update","server","sandbox","config","deploy","build","changelog","rebuild","hotfix","db","cpgen","func","sim","ropssim","lastb","latestb","dump","ctv","logs","iso"];
 
 function usage() {
     console.log("Usage:  tm <cmd>");
@@ -36,6 +36,7 @@ function usage() {
     console.log("   dump                   dump all current settings as JSON.");
 	console.log("   ctv                    run commtraceviewer.");
 	console.log("   logs                   opens all relevant log files in LogExpert (win) or tail (ux).");
+	console.log("   iso                    opens ISO message parser and builder.");
     console.log();
     console.log("All commands can be abbreviated, for instance 'l' for 'lastb', first match wins.");
     console.log();
