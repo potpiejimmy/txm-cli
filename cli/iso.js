@@ -14,14 +14,15 @@ export async function invoke(args) {
     let isobuilderStartHtml = isobuilderDir + "README.html";
     
     // download and install isobuilder
-    let downloadFileName = "isobuilder-1.0.0.zip";
-    let downloadUrl = "https://github.com/potpiejimmy/isobuilder-next/releases/download/v1%2C0.0/" + downloadFileName;
+    let downloadFileName = "isobuilder-1.0.1.zip";
+    let downloadUrl = "https://github.com/potpiejimmy/isobuilder-next/releases/download/v1.0.1/" + downloadFileName;
 
-    if (!fs.existsSync(isobuilderStartHtml)) {
-        console.log("isobuilder is not installed in " + isobuilderDir);
+    let installerZip = isobuilderDir + downloadFileName;
+
+    if (!fs.existsSync(installerZip)) {
+        console.log(installerZip + " is not installed in " + isobuilderDir);
 
         if (!fs.existsSync(isobuilderDir)) fs.mkdirSync(isobuilderDir);
-        let installerZip = isobuilderDir + downloadFileName;
         await util.downloadFile(downloadUrl, installerZip);
 
         console.log("Unzipping " + installerZip);
@@ -29,7 +30,7 @@ export async function invoke(args) {
 
         console.log("isobuilder successfully installed in " + isobuilderDir);
     } else {
-        console.log("isobuilder is already installed in " + isobuilderDir);
+        console.log(installerZip + " is already installed in " + isobuilderDir);
     }
 
     console.log("Opening " + isobuilderStartHtml);
