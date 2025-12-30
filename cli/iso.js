@@ -14,8 +14,8 @@ export async function invoke(args) {
     let isobuilderStartHtml = isobuilderDir + "README.html";
     
     // download and install isobuilder
-    let downloadFileName = "isobuilder-1.0.1.zip";
-    let downloadUrl = "https://github.com/potpiejimmy/isobuilder-next/releases/download/v1.0.1/" + downloadFileName;
+    let downloadFileName = "isobuilder-1.0.2.zip";
+    let downloadUrl = "https://github.com/potpiejimmy/isobuilder-next/releases/download/v1.0.2/" + downloadFileName;
 
     let installerZip = isobuilderDir + downloadFileName;
 
