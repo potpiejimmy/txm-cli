@@ -20,7 +20,7 @@ export async function invoke(args) {
     let installerZip = isobuilderDir + downloadFileName;
 
     if (!fs.existsSync(installerZip)) {
-        console.log(installerZip + " is not installed in " + isobuilderDir);
+        console.log(installerZip + " is not installed, installing it now.");
 
         if (!fs.existsSync(isobuilderDir)) fs.mkdirSync(isobuilderDir);
         await util.downloadFile(downloadUrl, installerZip);
@@ -28,12 +28,10 @@ export async function invoke(args) {
         console.log("Unzipping " + installerZip);
         new AdmZip(installerZip).extractAllTo(isobuilderDir, /*overwrite*/true);
 
-        console.log("isobuilder successfully installed in " + isobuilderDir);
+        console.log(downloadFileName + " successfully installed in " + isobuilderDir);
     } else {
-        console.log(installerZip + " is already installed in " + isobuilderDir);
+        console.log(installerZip + " is already installed.");
     }
-
-    console.log("Opening " + isobuilderStartHtml);
 
     console.log("Note: You may configure your default browser for opening URLs like this: 'tm c set DefaultBrowser firefox'");
     let browser = global.settings.value("config.DefaultBrowser");
