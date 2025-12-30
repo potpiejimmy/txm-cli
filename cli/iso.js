@@ -10,7 +10,7 @@ export async function invoke(args) {
             ? process.env.HOME + '/Library/Application Support'
             : process.env.HOME + '/.config';  // Linux/Unix
 
-    let isobuilderDir = appDataDir + "/isobuilder/";
+    let isobuilderDir = appDataDir + (process.platform === 'win32' ? "\\isobuilder\\" : "/isobuilder/");
     let isobuilderStartHtml = isobuilderDir + "README.html";
     
     // download and install isobuilder
