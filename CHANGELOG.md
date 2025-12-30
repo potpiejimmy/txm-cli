@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.32.0](https://github.com/potpiejimmy/txm-cli/compare/v1.31.8...v1.32.0) (2025-12-30)
+
+
+### Features
+
+* added "tm iso" command to open ISO message builder and parser ([b6d46af](https://github.com/potpiejimmy/txm-cli/commit/b6d46af8900c605d90682e8ec876483cffee2999))
+
 ### [1.31.8](https://github.com/potpiejimmy/txm-cli/compare/v1.31.7...v1.31.8) (2025-12-12)
 
 ### [1.31.7](https://github.com/potpiejimmy/txm-cli/compare/v1.31.6...v1.31.7) (2025-12-11)
