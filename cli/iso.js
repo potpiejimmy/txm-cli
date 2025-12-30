@@ -4,7 +4,13 @@ import AdmZip from 'adm-zip';
 
 export async function invoke(args) {
 
-    let isobuilderDir = process.env.APPDATA + "\\isobuilder\\";
+    const appDataDir = process.platform === 'win32'
+        ? process.env.APPDATA
+        : process.platform === 'darwin'
+            ? process.env.HOME + '/Library/Application Support'
+            : process.env.HOME + '/.config';  // Linux/Unix
+
+    let isobuilderDir = appDataDir + "/isobuilder/";
     let isobuilderStartHtml = isobuilderDir + "README.html";
     
     // download and install isobuilder
