@@ -25,7 +25,7 @@ export async function exec(cmdline, cwd) {
  * Spawns a child command with inherited stdio.
  */
 export async function spawn(cmd, args, cwd, stdindata) {
-    const childProcess = cpr.spawn(cmd, args, {
+    const childProcess = cpr.spawn(args && args.length > 0 ? `${cmd} ${args.join(' ')}` : cmd, [], {
         cwd: cwd,
         shell: true,
         stdio: [stdindata ? 'pipe' : process.stdin, process.stdout, process.stderr]
@@ -43,7 +43,7 @@ export async function spawn(cmd, args, cwd, stdindata) {
  * Spawns a detached child process without stdio
  */
 export async function spawnDetached(cmd, args, cwd) {
-    cpr.spawn(cmd, args, {
+    cpr.spawn(args && args.length > 0 ? `${cmd} ${args.join(' ')}` : cmd, [], {
         cwd: cwd,
         shell: true,
         silent: true,
@@ -108,7 +108,8 @@ export async function asyncPause(timeout) {
 
 export async function getNPMConfigValue(key) {
     var win = process.platform === "win32";
-    const childProcess = cpr.spawn(win ? 'npm.cmd' : 'npm', ['config', 'get', key],
+    const npm = win ? 'npm.cmd' : 'npm';
+    const childProcess = cpr.spawn(`${npm} config get ${key}`, [],
         {
             shell: true,
             stdio: ['ignore', 'pipe', 'pipe']
