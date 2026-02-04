@@ -1,23 +1,30 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import * as util from '../utils/util.js';
 import propreader from 'properties-reader';
-import os from 'os';
+import os from 'node:os';
+import process from "node:process";
+
+const PARAM_USE_PROJECT_CONFIGURATION = "db.useSandboxConfiguration";
+
 
 function usage() {
     console.log("Usage:  tm db <cmd>");
     console.log();
     console.log("with <cmd> being one of");
     console.log();
-    console.log("       init                     initializes Oracle DBMS with FI tablespaces and grants.");
-    console.log("       adduser <user> <pw>      (re)creates a new Oracle user with the given user name and password.");
-    console.log("       set <user> <pw> [<sid>]  sets the current default DB user, password and SID (optional)");
-    console.log("       create                   (re)creates the FI database DDLs & DMLs (runs createDb.sh).");
-    console.log("       norops                   disables ROPS (executes disable-rops.sql).");
-    console.log("       devinit                  initializes dev system (executes devsystem_init.sql).");
-    console.log("       fix                      fixes Oracle connection problem by running 'startup' as sysdba.");
+    console.log("       init                      initializes Oracle DBMS with FI tablespaces and grants.");
+    console.log("       adduser <user> <pw>       (re)creates a new Oracle user with the given user name and password.");
+    console.log("       set <user> <pw> [<sid>]   sets the current default DB user, password and SID (optional)");
+    console.log("       create                    (re)creates the FI database DDLs & DMLs (runs createDb.sh).");
+    console.log("       norops                    disables ROPS (executes disable-rops.sql).");
+    console.log("       devinit                   initializes dev system (executes devsystem_init.sql).");
+    console.log("       fix                       fixes Oracle connection problem by running 'startup' as sysdba.");
+    console.log("       use-sandbox-configuration false (default): use user specific gradle.properties file for db actions");
+    console.log("                                 true: use project specific gradle.propertied file for db actions")
+    console.log("                                 empty: return to the default configuration")
     console.log();
     showCurrentSettings();
-    
+
     process.exit();
 }
 
@@ -32,6 +39,7 @@ export async function invoke(args) {
     else if ("norops".startsWith(cmd)) await executeSQL("disable-rops.sql");
     else if ("devinit".startsWith(cmd)) await executeSQL("devsystem_init.sql");
     else if ("fix".startsWith(cmd)) await fixOracleListener();
+    else if ("use-sandbox-configuration".startsWith(cmd)) await configureConfigFile(args[1]);
     else {
         console.log("Unknown command: " + cmd);
         usage();
@@ -39,7 +47,20 @@ export async function invoke(args) {
 }
 
 function getGradlePropertiesFile() {
-    return os.homedir() + "/.gradle/gradle.properties";
+    const filename = "/gradle.properties";
+
+    let filePath;
+
+    if (getUseProjectSpecificConfiguration()) {
+        let sandbox = globalThis.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
+        filePath = sandbox.path;
+
+    } else if ("GRADLE_USER_HOME" in process.env) {
+        filePath = process.env.GRADLE_USER_HOME;
+    } else {
+        filePath = os.homedir() + "/.gradle";
+    }
+    return (filePath + filename).replaceAll("\\", "/");
 }
 
 function showCurrentSettings() {
@@ -134,12 +155,12 @@ async function configureDB(user, pw, sid) {
 
 async function executeSQL(script) {
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
-    var win = process.platform === "win32";
+    let win = process.platform === "win32";
     await util.spawn(win ? "sqlplus.exe" : "sqlplus", [getDBConnectionString(), "@"+script], sbox.path+"/fi-asm-assembly/install/sql", "quit\n");
 }
 
-async function exexuteAsDBA(sql) {
-    var win = process.platform === "win32";
+async function executeAsDBA(sql) {
+    let win = process.platform === "win32";
     let connString = "/@"+getSID();
     if(getDbUser().toLowerCase() === "sys"){
         connString = getDBConnectionString();
@@ -167,7 +188,7 @@ grant execute on dbms_system to public;
         sql += "CREATE BIGFILE TABLESPACE "+t+" DATAFILE 'c:/oraclexe/FI/"+t+".dbf' SIZE 100M AUTOEXTEND ON NEXT 1024K MAXSIZE UNLIMITED NOLOGGING EXTENT MANAGEMENT LOCAL SEGMENT SPACE MANAGEMENT AUTO;\r\n";
     }
     sql += "quit\r\n";
-    await exexuteAsDBA(sql);
+    await executeAsDBA(sql);
 }
 
 async function createSchema(user, pw) {
@@ -209,13 +230,121 @@ commit;
 quit;
 `
     sql = sql.replace(/\$user/g, user).replace(/\$password/g, pw);
-    await exexuteAsDBA(sql);
+    await executeAsDBA(sql);
 }
 
 async function fixOracleListener() {
-    var win = process.platform === "win32";
+    let win = process.platform === "win32";
     // connect as sysdba without SID!
     await util.spawn(win ? "sqlplus.exe" : "sqlplus", ["/", "as", "sysdba"], null, `startup;
 quit;
 `);
+}
+
+async function configureConfigFile(useProjectSpecific) {
+
+    if (useProjectSpecific === undefined || useProjectSpecific === null) {
+        if (isUseProjectSpecificConfigurationSet()) {
+            console.log("Return to default configuration")
+            migrateDbEntries(true, false);
+        }
+        process.exit();
+    }
+
+    let isUseProjectSpecific = /^true$/i.test(useProjectSpecific);
+    if (!isUseProjectSpecific && !/^false$/i.test(useProjectSpecific)) {
+        usage();
+    }
+
+    let storedValue = getUseProjectSpecificConfiguration();
+
+    // Check if value is unchanged
+    if (isUseProjectSpecific === storedValue) {
+        console.log("Configuration type not changed")
+    } else {
+        console.log("Use project specific gradle.properties : " + useProjectSpecific);
+        migrateDbEntries(false, useProjectSpecific);
+    }
+}
+
+// Get the value for the configuration parameter "config.useSandboxConfiguration" as boolean
+function getUseProjectSpecificConfiguration() {
+    let storedValue = globalThis.settings.value(PARAM_USE_PROJECT_CONFIGURATION);
+    if (storedValue === undefined || storedValue === null) {
+        return false;
+    }
+    return /^true$/i.test(storedValue);
+}
+
+// Check if the configuration parameter "config.useSandboxConfiguration" is set in the configuration
+function isUseProjectSpecificConfigurationSet() {
+    let storedValue = globalThis.settings.value(PARAM_USE_PROJECT_CONFIGURATION);
+    return !(storedValue === undefined || storedValue === null);
+}
+
+function migrateDbEntries(useDefault, useProjectSpecific) {
+
+    let cfgFile = getGradlePropertiesFile();
+
+    // Read the original values
+    let dbProps = propreader(getGradlePropertiesFile());
+    let dbType = dbProps.get("dbType");
+    let dbConnection = dbProps.get("dbConnection");
+    let dbPort = dbProps.get("dbPort");
+    let dbName = dbProps.get("dbPort");
+    let dbUser = dbProps.get("dbUser");
+    let dbPw = dbProps.get("dbPW");
+    let dbOwner = dbProps.get("dbOwner");
+    let dbSchema = dbProps.get("dbSchema");
+
+    if (useDefault) {
+        globalThis.settings.delete(PARAM_USE_PROJECT_CONFIGURATION);
+    } else {
+        globalThis.settings.setValue(PARAM_USE_PROJECT_CONFIGURATION, useProjectSpecific);
+    }
+
+    let newCfgFile = getGradlePropertiesFile();
+    if (cfgFile === newCfgFile) {
+        console.log("Configuration file not changed");
+        console.log("Old configuration filename: " + cfgFile);
+        console.log("New configuration filename: " + newCfgFile);
+        return;
+    }
+
+    // Remove the values from the old configuration file
+    deleteEntriesFromConfiguration(cfgFile);
+
+    // Remove the values from the new configuration file
+    let cfg = deleteEntriesFromConfiguration(newCfgFile);
+    if (!cfg.endsWith("\n")) {
+        cfg = cfg + "\n";
+    }
+    // Write the configuration to the new configuration file
+    cfg = cfg + "dbType=" + dbType + "\n" +
+        "dbConnection=" + dbConnection + "\n" +
+        "dbPort=" + dbPort + "\n" +
+        "dbName=" + dbName + "\n" +
+        "dbUser=" + dbUser + "\n" +
+        "dbPW=" + dbPw + "\n" +
+        "dbOwner=" + dbOwner + "\n";
+    if (dbSchema !== undefined && dbSchema !== null) {
+        cfg = cfg + "dbSchema=" + dbSchema + "\n";
+    }
+    fs.writeFileSync(newCfgFile, cfg);
+    console.log("Configuration file in use: " + newCfgFile)
+    showCurrentSettings();
+}
+
+function deleteEntriesFromConfiguration(filename) {
+    let cfg = fs.readFileSync(filename).toString();
+    cfg = cfg.replace(/^dbType=.*\n/m, "");
+    cfg = cfg.replace(/^dbConnection=.*\n/m, "");
+    cfg = cfg.replace(/^dbPort=.*\n/m, "");
+    cfg = cfg.replace(/^dbName=.*\n/m, "");
+    cfg = cfg.replace(/^dbUser=.*\n/m, "");
+    cfg = cfg.replace(/^dbPW=.*\n/m, "");
+    cfg = cfg.replace(/^dbOwner=.*\n/m, "");
+    cfg = cfg.replace(/^dbSchema=.*\n/m, "")
+    fs.writeFileSync(filename, cfg);
+    return cfg;
 }
