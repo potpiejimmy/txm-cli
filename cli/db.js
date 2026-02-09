@@ -291,7 +291,7 @@ function migrateDbEntries(useDefault, useProjectSpecific) {
     let dbType = dbProps.get("dbType");
     let dbConnection = dbProps.get("dbConnection");
     let dbPort = dbProps.get("dbPort");
-    let dbName = dbProps.get("dbPort");
+    let dbName = dbProps.get("dbName");
     let dbUser = dbProps.get("dbUser");
     let dbPw = dbProps.get("dbPW");
     let dbOwner = dbProps.get("dbOwner");
