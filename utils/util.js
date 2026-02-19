@@ -1,12 +1,12 @@
-import * as cpr from 'child_process';
+import * as cpr from 'node:child_process';
 import portscanner from 'portscanner';
-import fs from 'fs';
+import fs from 'node:fs';
 import { deleteSync } from 'del';
 import ncp from 'ncp';
 import AdmZip from 'adm-zip';
 import fetch from "node-fetch";
-import os from 'os';
-import dns from 'dns';
+import os from 'node:os';
+import dns from 'node:dns';
 import open from 'opn';
 
 /**
@@ -66,7 +66,7 @@ export async function getAuthKey(key) {
     let authToken = global.settings.value("config." + key);
     if (!authToken) {
         authToken = await this.getNPMConfigValue('txm-' + key);
-        if (authToken) global.settings.setValue("config." + key, authToken);
+        if (authToken) global.settings.setValue("config." + key, authToken, false);
     }
     if (!authToken) {
         if(key === "auth-nexus3de"){
@@ -160,7 +160,7 @@ export async function downloadFile(url, targetFile, fetchOptions) {
         const dest = fs.createWriteStream(targetFile);
         res.body.pipe(dest);
         dest.on('finish', () => {
-            let end = (new Date() - start) / 1000;
+            let end = (Date.now() - start) / 1000;
             console.info('Execution time: %ds', end);
             console.info("Path to the file: " + dest.path);
             resolve();
