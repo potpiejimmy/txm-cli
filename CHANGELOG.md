@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.33.0](https://github.com/potpiejimmy/txm-cli/compare/v1.32.9...v1.33.0) (2026-04-20)
+
+
+### Features
+
+* allow option -nogw for tm sim ([9ca0469](https://github.com/potpiejimmy/txm-cli/commit/9ca0469bdc2a1301916ab810bbd1d7b57bd1f887))
+
 ### [1.32.9](https://github.com/potpiejimmy/txm-cli/compare/v1.32.8...v1.32.9) (2026-02-22)
 
 ### [1.32.8](https://github.com/potpiejimmy/txm-cli/compare/v1.32.7...v1.32.8) (2026-02-09)
