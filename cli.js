@@ -22,7 +22,8 @@ function usage() {
     console.log("   db                     manage your databases.");
     console.log("   cpgen                  perform CPGEN imports of cpg files.");
     console.log("   func                   manage custom function chains.");
-    console.log("   sim                    configure and run the PBM simulator GUI.");
+    console.log("   sim [-nogw]            configure and run the PBM simulator GUI,");
+    console.log("                          skips FC gateway start if -nogw is specified.");
     console.log("   ropssim [ui]           configure and run ROPS gateway and ROPS cmd client,");
     console.log("                          specify option 'ui' to start the GUI version.");
     console.log("   lastb [<r> [<b> [d]]]  display last build number (and copy to clipboard),");

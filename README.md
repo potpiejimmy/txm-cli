@@ -29,7 +29,8 @@ The command line tool offers various subcommands that can be displayed by just e
         db                     manage your databases.
         cpgen                  perform CPGEN imports of cpg files.
         func                   manage custom function chains.
-        sim                    configure and run the PBM simulator GUI.
+        sim [-nogw]            configure and run the PBM simulator GUI,
+                                skips FC gateway start if -nogw is specified.
         ropssim [ui]           configure and run ROPS gateway and ROPS cmd client,
                                 specify option 'ui' to start the GUI version.
         lastb [<r> [<b> [d]]]  display last build number (and copy to clipboard),

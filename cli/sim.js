@@ -2,6 +2,8 @@ import * as util from '../utils/util.js';
 import fs from 'fs';
 
 export async function invoke(args) {
+    const noGateway = args.includes("-nogw");
+
     let sbox = global.settings.value("sandboxes." + global.settings.value("defaults.sandbox"));
     let servers = global.settings.value("servers");
     if (!sbox || !servers) {
@@ -20,20 +22,25 @@ export async function invoke(args) {
 
     const GW_PORT = 9001;
 
-    // if FC Gateway not running already, start it up along with the Chameleons in a shared terminal window with tabs.
-    if (!(await util.isPortOpen(GW_PORT))) {
+    // if FC Gateway not running already (and not skipped), start it up along with the Chameleons in a shared terminal window with tabs.
+    if (noGateway || !(await util.isPortOpen(GW_PORT))) {
         try {
 
-            // configure FC Gateway port
-            let cfgFile = gwpath + "/config/PCEFIFCGateway.xml";
-            let cfg = fs.readFileSync(cfgFile);
-            cfg = cfg.toString().replace(/(<sectionEntry name="ServerUrl">http:\/\/localhost:)(\d+)(<\/sectionEntry>)/m, "$1" + util.determineServerPort(servers) + "$3");
-            fs.writeFileSync(cfgFile, cfg);
-
-            console.log("Starting Gateway and Chameleons terminal window.");
             let cmdLine = "wt";
-            cmdLine += " new-tab -d \"" + gwpath + "\\bin\" \"" + gwpath + "\\bin\\startFCGateway.cmd\"";
-            cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K1.cmd\"";
+            if (noGateway) {
+                console.log("Starting Chameleons terminal window (gateway skipped via -nogw).");
+                cmdLine += " new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K1.cmd\"";
+            } else {
+                // configure FC Gateway port
+                let cfgFile = gwpath + "/config/PCEFIFCGateway.xml";
+                let cfg = fs.readFileSync(cfgFile);
+                cfg = cfg.toString().replace(/(<sectionEntry name="ServerUrl">http:\/\/localhost:)(\d+)(<\/sectionEntry>)/m, "$1" + util.determineServerPort(servers) + "$3");
+                fs.writeFileSync(cfgFile, cfg);
+
+                console.log("Starting Gateway and Chameleons terminal window.");
+                cmdLine += " new-tab -d \"" + gwpath + "\\bin\" \"" + gwpath + "\\bin\\startFCGateway.cmd\"";
+                cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K1.cmd\"";
+            }
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K19.cmd\"";
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K14.cmd\"";
             cmdLine += " ; new-tab -d \"" + chameleonpath + "\\bin\" \"" + chameleonpath + "\\bin\\K24.cmd\"";
@@ -41,9 +48,11 @@ export async function invoke(args) {
             cmdLine += " ; new-tab -d \"" + simpath + "\\bin\" cmd.exe";
             //console.log(cmdLine);
             await util.exec(cmdLine);
-            // wait for FC Gateway
-            console.log("Waiting for FC Gateway to be ready...");
-            while (!await util.isPortOpen(GW_PORT)) await util.asyncPause(500);
+            if (!noGateway) {
+                // wait for FC Gateway
+                console.log("Waiting for FC Gateway to be ready...");
+                while (!await util.isPortOpen(GW_PORT)) await util.asyncPause(500);
+            }
         } catch (err) {
             console.error("Could not start terminal window: " + err);
         }
