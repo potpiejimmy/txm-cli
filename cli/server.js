@@ -102,7 +102,7 @@ async function list(showStartStopStatus = false) {
 
 async function set(name, path, type='txm') {
     if (!name || !path) usage();
-    if (!['txm','rops','kko','jetty'].includes(type)) usage();
+    if (!['txm','rops','kko'].includes(type)) usage();
     if (!name.match(/^[A-Za-z0-9-_]*$/)) {
         console.log("Sorry, the name '"+name+"' contains invalid characters.");
         return;
