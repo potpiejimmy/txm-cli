@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.34.2](https://github.com/potpiejimmy/txm-cli/compare/v1.34.1...v1.34.2) (2026-09-21)
+
+
+### Bug Fixes
+
+* server type validation ([aa0e028](https://github.com/potpiejimmy/txm-cli/commit/aa0e0281be2c1475d083b4cc2f35348c49d528ee))
+
 ### [1.34.1](https://github.com/potpiejimmy/txm-cli/compare/v1.34.0...v1.34.1) (2026-09-21)
 
 
