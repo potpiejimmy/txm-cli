@@ -54,9 +54,10 @@ export async function invoke(args) {
             if (server.name.startsWith(defsrv)) {
                 console.log("Adding logs for server " + server.path);
                 let serverLogDir = server.path + "/logs/";
-                relevantLogFiles.push(serverLogDir + "messages.log");
+                if (server.serverType !== 'jetty') relevantLogFiles.push(serverLogDir + "messages.log");
                 if (server.type !== 'kko') {
                     if (fs.existsSync(serverLogDir)) {
+                        addTMLogFile(serverLogDir, "console-", ".log", relevantLogFiles);
                         addTMLogFile(serverLogDir, "PCELog-", ".prn", relevantLogFiles);
                         addTMLogFile(serverLogDir, "CommTrace-", ".ctr", relevantLogFiles);
                         addTMLogFile(serverLogDir, "PCECommtrace-", ".ctr", relevantLogFiles);

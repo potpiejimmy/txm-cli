@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
+import { spawn } from 'node:child_process';
 import * as util from '../utils/util.js';
 import Table from 'easy-table';
 import { parseString } from 'xml2js';
@@ -11,7 +12,7 @@ function usage() {
     console.log("with <cmd> being one of");
     console.log();
     console.log("       list                                        list configured servers.");
-    console.log("       set <name> <path> [<type>]                  set or update a server. type can be one of txm,rops,kko.");
+    console.log("       set <name> <path> [<type>]                  set or update a server. type can be one of txm,rops,kko,jetty");
     console.log("       default <name prefix/no.>                   sets the current default server(s). can be a");
     console.log("                                                   prefix to multiple server names to target");
     console.log("                                                   multiple servers or a specific index no.");
@@ -101,7 +102,7 @@ async function list(showStartStopStatus = false) {
 
 async function set(name, path, type='txm') {
     if (!name || !path) usage();
-    if (!['txm','rops','kko'].includes(type)) usage();
+    if (!['txm','rops','kko','jetty'].includes(type)) usage();
     if (!name.match(/^[A-Za-z0-9-_]*$/)) {
         console.log("Sorry, the name '"+name+"' contains invalid characters.");
         return;
@@ -113,7 +114,7 @@ async function set(name, path, type='txm') {
         return;
     }
     server.name = name;
-    server.path = path;
+    server.path = server.serverType === 'jetty' ? path + "/runtime" : path;
     server.type = type;
     server.debugPort = determineServerDebugPort(server);
     server.db = determineServerDb(server);
@@ -140,6 +141,11 @@ function determineServerType(path) {
             serverType: "wlp",
             port: parseInt(port[1])
         };
+    } else if (fs.existsSync(path+"/build.gradle") && fs.existsSync(path+"/scripts")) {
+        return {
+            serverType: "jetty",
+            port: 8080 /* default Jetty port */
+        };
     }
 }
 
@@ -159,6 +165,8 @@ function determineServerDebugPort(server) {
                 }
             });
         }
+    } else if ('jetty' === server.serverType) {
+        debugPort = debugPortForServer(server.name);
     }
 
     return debugPort;
@@ -244,7 +252,12 @@ function nameToIndex(name) {
 
 function debugPortForServer(name) {
     const BASE_DEBUG_PORT = 7777;
-    return BASE_DEBUG_PORT + nameToIndex(name) - 1;
+    let index = nameToIndex(name);
+    if (!index) {
+        // server not saved yet (e.g. during 'set'), so assign the next free index
+        index = Object.keys(global.settings.value("servers") || {}).length + 1;
+    }
+    return BASE_DEBUG_PORT + index - 1;
 }
 
 async function def(name) {
@@ -280,6 +293,8 @@ export async function stop(name, serverOption) {
                     await util.spawn(win ? "jboss-cli.bat" : "./jboss-cli.sh", ["--controller=localhost:"+server.managementPort, "--connect", ":shutdown"], server.path + "/../bin", "\n");
                 } else if (server.serverType == "wlp") {
                     await util.spawn(win ? "server.bat" : "./server", ["stop", nativeServerName, serverOption], server.path + "/../../../bin");
+                } else if (server.serverType == "jetty") {
+                    console.log("Jetty is not stoppable via 'tm server stop'. Press Ctrl+C in its console window to shut it down.");
                 }
             } else {
                 console.log("Server '" + server.name + "' is not running.");
@@ -336,6 +351,8 @@ async function start(name, option, serverOption) {
                     await startJBoss(server);
                 } else if (server.serverType == "wlp") {
                     await util.spawn(win ? "server.bat" : "./server", ["start", nativeServerName, serverOption], server.path + "/../../../bin");
+                } else if (server.serverType == "jetty") {
+                    await startJetty(server);
                 }
             } else {
                 console.log("Server '" + server.name + "' is already running.");
@@ -388,6 +405,26 @@ async function login(name, option, browser, isPrincipal) {
             }
         }
     }
+}
+
+async function startJetty(server) {
+    let debugPort = server.debugPort || determineServerDebugPort(server);
+    let runScript = path.join(server.path, "bin", process.platform === "win32" ? "run.bat" : "run");
+    let env = {
+        ...process.env,
+        // run.bat reads JAVA_OPTS (not JAVA_OPTIONS) and appends it to its own computed JVM options.
+        // Development mode (required for remote debugging) is controlled via runtime/install/tmoptions'
+        // PCECTR_DEVELOPMENT_MODE, patched by scripts/buildClean.sh, not via a JVM system property.
+        JAVA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + debugPort
+    };
+
+    // the app already logs its own console output to runtime/logs/console-<host>.log,
+    // so this stays attached to a real console (stdio inherit) for a graceful Ctrl+C shutdown
+    await new Promise((resolve, reject) => {
+        const child = spawn(runScript, [], { cwd: server.path, env, shell: true, stdio: ['inherit', 'inherit', 'inherit'] });
+        child.once('exit', code => resolve(code));
+        child.once('error', err => reject(err));
+    });
 }
 
 async function startJBoss(server) {
