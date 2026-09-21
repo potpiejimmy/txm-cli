@@ -12,7 +12,7 @@ function usage() {
     console.log("with <cmd> being one of");
     console.log();
     console.log("       list                                        list configured servers.");
-    console.log("       set <name> <path> [<type>]                  set or update a server. type can be one of txm,rops,kko,jetty");
+    console.log("       set <name> <path> [<type>]                  set or update a server. type can be one of txm,rops,kko");
     console.log("       default <name prefix/no.>                   sets the current default server(s). can be a");
     console.log("                                                   prefix to multiple server names to target");
     console.log("                                                   multiple servers or a specific index no.");
