@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.34.0](https://github.com/potpiejimmy/txm-cli/compare/v1.33.1...v1.34.0) (2026-09-21)
+
+
+### Features
+
+* added support for Jetty server type ([b885fd7](https://github.com/potpiejimmy/txm-cli/commit/b885fd75b221ae0fa04f3500cdea7e418094015d))
+
 ### [1.33.1](https://github.com/potpiejimmy/txm-cli/compare/v1.33.0...v1.33.1) (2026-09-20)
 
 ## [1.33.0](https://github.com/potpiejimmy/txm-cli/compare/v1.32.9...v1.33.0) (2026-04-20)
