@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.35.0](https://github.com/potpiejimmy/txm-cli/compare/v1.34.2...v1.35.0) (2026-10-07)
+
+
+### Features
+
+* allow specifying Jetty port via JETTY_PORT env variable on tm s set ([6b3521a](https://github.com/potpiejimmy/txm-cli/commit/6b3521ad8b5aa268d8208f2e301adbcb58e71e11))
+
 ### [1.34.2](https://github.com/potpiejimmy/txm-cli/compare/v1.34.1...v1.34.2) (2026-09-21)
 
 
