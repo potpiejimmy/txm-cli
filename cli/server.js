@@ -142,9 +142,14 @@ function determineServerType(path) {
             port: parseInt(port[1])
         };
     } else if (fs.existsSync(path+"/build.gradle") && fs.existsSync(path+"/scripts")) {
+        let port = process.env.JETTY_PORT ? parseInt(process.env.JETTY_PORT) : 8080;
+        if (process.env.JETTY_PORT)
+            console.log("Using Jetty port " + port + " from environment variable JETTY_PORT (set it to change this).");
+        else
+            console.log("Using default Jetty port " + port + " (set environment variable JETTY_PORT to change this).");
         return {
             serverType: "jetty",
-            port: 8080 /* default Jetty port */
+            port: port
         };
     }
 }
