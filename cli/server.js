@@ -248,7 +248,7 @@ export function indexToNameIfIndex(nameOrIndex) {
 }
 
 function nameToIndex(name) {
-    let keys = Object.keys(global.settings.value("servers"));
+    let keys = Object.keys(global.settings.value("servers") || {});
     for (let i=0; i<keys.length; i++) {
         if (keys[i] == name) return i+1;
     }
